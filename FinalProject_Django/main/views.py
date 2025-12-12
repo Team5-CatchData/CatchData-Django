@@ -1,8 +1,9 @@
 import json
 import os
+
 import requests
-from django.shortcuts import render
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
 
