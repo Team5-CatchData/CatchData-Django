@@ -17,6 +17,6 @@ jobs:
           port: 22
           
           script: |
-            cd /home/ubuntu/catchdata-django
+            cd /home/ubuntu/CatchData-django
             git fetch
             git pull
