@@ -1,0 +1,22 @@
+name: Deploy django via GitActions
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy EC2 via GitActions
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.django_EC2_PUBLIC_IP }}
+          username: ubuntu
+          key: ${{ secrets.django_SSH_PRIVATE_KEY }}
+          port: 22
+          
+          script: |
+            cd /home/ubuntu/catchdata-django
+            git fetch
+            git pull
