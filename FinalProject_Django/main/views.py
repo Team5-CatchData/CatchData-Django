@@ -3,8 +3,10 @@ import os
 
 import requests
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
+
+from .models import Restaurant
 
 
 def llm(request):
@@ -72,3 +74,12 @@ def chat_api(request):
             {'error': str(e)},
             status=500
         )
+
+
+def restaurant_detail(request, restaurant_id):
+    """레스토랑 상세 페이지"""
+    restaurant = get_object_or_404(Restaurant, restaurant_id=restaurant_id)
+    context = {
+        'restaurant': restaurant
+    }
+    return render(request, 'restaurant_detail.html', context)

@@ -346,9 +346,8 @@
     }
 
     function handleReservation(restaurantID, restaurantName) {
-        alert(`${restaurantName} (ID: ${restaurantID}) 예약 페이지로 이동합니다.`);
-        // 실제 구현시에는 예약 페이지로 이동
-        // window.location.href = `/reservation/${restaurantID}`;
+        // 레스토랑 상세 페이지로 이동
+        window.location.href = `/restaurant/${restaurantID}/`;
     }
 
     function addLoadingMessage() {
