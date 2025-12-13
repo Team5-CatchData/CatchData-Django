@@ -52,8 +52,8 @@ def chat_api(request):
         except requests.exceptions.ConnectionError:
             # 연결 실패시 테스트 응답 반환 (개발용)
             test_response = {
-                "restaurantID": "2154588",
-                "answer": "홍대음식점 빨간어묵을 추천해드려요!",
+                "restaurantID": ["2154588", "213213"],
+                "answer": "홍대음식점 빨간어묵을 추천해드려요! 그리고 수제 햄버거 집 버거걱도 추천드립니다!",
             }
             return JsonResponse(test_response)
         except requests.exceptions.RequestException as e:
