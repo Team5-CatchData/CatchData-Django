@@ -180,6 +180,38 @@
     .empty-state-text {
         font-size: 1.1rem;
     }
+
+    .restaurant-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .restaurant-button {
+        padding: 0.75rem 1.25rem;
+        background-color: #e2842b;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: left;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .restaurant-button:hover {
+        background-color: #be6a0a;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .restaurant-button:active {
+        background-color: #2868a8;
+        transform: translateY(0);
+    }
 </style>
 {% endblock %}
 
@@ -256,7 +288,7 @@
             removeLoadingMessage(loadingId);
 
             if (data.answer) {
-                addMessage('assistant', data.answer);
+                addMessage('assistant', data.answer, data.restaurant_ID);
             } else {
                 addMessage('assistant', '\uC8C4\uC1A1\uD569\uB2C8\uB2E4. \uC751\uB2F5\uC744 \uC0DD\uC131\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.');
             }
@@ -270,7 +302,7 @@
         }
     });
 
-    function addMessage(role, content) {
+    function addMessage(role, content, restaurantIDs = null) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${role}`;
 
@@ -284,9 +316,38 @@
 
         messageDiv.appendChild(label);
         messageDiv.appendChild(contentDiv);
+
+        // restaurantID가 있으면 버튼 생성
+        if (role === 'assistant' && restaurantIDs && Array.isArray(restaurantIDs) && restaurantIDs.length > 0) {
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.className = 'restaurant-buttons';
+
+            // 테스트용 레스토랑 이름 매핑
+            const restaurantNames = {
+                2154588: '빨간어묵',
+                213213: '버거걱'
+            };
+
+            restaurantIDs.forEach(restaurantID => {
+                const button = document.createElement('button');
+                button.className = 'restaurant-button';
+                const restaurantName = restaurantNames[restaurant_ID] || `레스토랑 ${restaurantID}`;
+                button.textContent = `${restaurantName} 예약하기`;
+                button.onclick = () => handleReservation(restaurantID, restaurantName);
+                buttonsContainer.appendChild(button);
+            });
+
+            contentDiv.appendChild(buttonsContainer);
+        }
+
         chatMessages.appendChild(messageDiv);
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function handleReservation(restaurantID, restaurantName) {
+        // 레스토랑 상세 페이지로 이동
+        window.location.href = `/restaurant/${restaurantID}/`;
     }
 
     function addLoadingMessage() {

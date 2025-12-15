@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}{{ restaurant.name }} - 레스토랑 상세{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .restaurant-detail-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .restaurant-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        background-color: #f0f0f0;
+    }
+
+    .restaurant-info {
+        padding: 2rem;
+    }
+
+    .restaurant-header {
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .restaurant-name {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 0.75rem;
+    }
+
+    .restaurant-category {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: #fff5f0;
+        color: #ff8c42;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .restaurant-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }
+
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.3rem;
+    }
+
+    .rating-value {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .info-section {
+        margin-bottom: 2rem;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #666;
+        min-width: 120px;
+        font-size: 1rem;
+    }
+
+    .info-value {
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .phone-link {
+        color: #ff8c42;
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .phone-link:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background-color: #ff8c42;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #ff7a28;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 140, 66, 0.3);
+    }
+
+    .btn-secondary {
+        background-color: #f0f0f0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background-color: #e0e0e0;
+    }
+
+    .no-image {
+        width: 100%;
+        height: 400px;
+        background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #ccc;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="restaurant-detail-container">
+    {% if restaurant.image_url %}
+        <img src="{{ restaurant.image_url }}" alt="{{ restaurant.name }}" class="restaurant-image">
+    {% else %}
+        <div class="no-image">🍽️</div>
+    {% endif %}
+
+    <div class="restaurant-info">
+        <div class="restaurant-header">
+            <h1 class="restaurant-name">{{ restaurant.name }}</h1>
+
+            {% if restaurant.category %}
+            <span class="restaurant-category">{{ restaurant.category }}</span>
+            {% endif %}
+
+            {% if restaurant.rating %}
+            <div class="restaurant-rating">
+                <span class="rating-stars">★★★★★</span>
+                <span class="rating-value">{{ restaurant.rating }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="info-section">
+            <div class="info-row">
+                <div class="info-label">레스토랑 ID</div>
+                <div class="info-value">{{ restaurant.restaurant_ID }}</div>
+            </div>
+
+            {% if restaurant.phone %}
+            <div class="info-row">
+                <div class="info-label">전화번호</div>
+                <div class="info-value">
+                    <a href="tel:{{ restaurant.phone }}" class="phone-link">{{ restaurant.phone }}</a>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if restaurant.address %}
+            <div class="info-row">
+                <div class="info-label">주소</div>
+                <div class="info-value">{{ restaurant.address }}</div>
+            </div>
+            {% endif %}
+
+            <div class="info-row">
+                <div class="info-label">카테고리</div>
+                <div class="info-value">{{ restaurant.category|default:"미분류" }}</div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="makeReservation()">예약하기</button>
+            <a href="{% url 'main:llm' %}" class="btn btn-secondary">챗봇으로 돌아가기</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function makeReservation() {
+        // 예약 확인
+        const confirmed = confirm('{{ restaurant.name }}을(를) 예약하시겠습니까?');
+
+        if (confirmed) {
+            // 실제 구현시에는 서버에 예약 요청을 보내는 로직이 들어갑니다
+            // 지금은 테스트 환경이므로 바로 성공 처리
+            alert('예약되었습니다');
+
+            // 예약 후 챗봇 페이지로 이동 (선택사항)
+            // window.location.href = "{% url 'main:llm' %}";
+        }
+    }
+</script>
+{% endblock %}

@@ -3,8 +3,10 @@ import os
 
 import requests
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_http_methods
+
+from .models import Restaurant
 
 
 def llm(request):
@@ -52,8 +54,8 @@ def chat_api(request):
         except requests.exceptions.ConnectionError:
             # 연결 실패시 테스트 응답 반환 (개발용)
             test_response = {
-                "restaurantID": "2154588",
-                "answer": "홍대음식점 빨간어묵을 추천해드려요!",
+                "restaurant_ID": [2154588, 213213],
+                "answer": "홍대음식점 빨간어묵을 추천해드려요! 그리고 수제 햄버거 집 버거걱도 추천드립니다!",
             }
             return JsonResponse(test_response)
         except requests.exceptions.RequestException as e:
@@ -72,3 +74,12 @@ def chat_api(request):
             {'error': str(e)},
             status=500
         )
+
+
+def restaurant_detail(request, restaurant_id):
+    """레스토랑 상세 페이지"""
+    restaurant = get_object_or_404(Restaurant, restaurant_ID=restaurant_id)
+    context = {
+        'restaurant': restaurant
+    }
+    return render(request, 'restaurant_detail.html', context)
