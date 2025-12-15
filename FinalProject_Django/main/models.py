@@ -10,6 +10,10 @@ class Restaurant(models.Model):
     category = models.CharField(max_length=20, blank=True, verbose_name="카테고리")
     address = models.CharField(max_length=200, blank=True, verbose_name="주소")
     image_url = models.URLField(max_length=500, blank=True, verbose_name="이미지 URL")
+    x = models.FloatField(null=True, blank=True, verbose_name="경도")
+    y = models.FloatField(null=True, blank=True, verbose_name="위도")
+    region = models.CharField(max_length=20, blank=True, verbose_name="지역")
+    city = models.CharField(max_length=15, blank=True, verbose_name="도시")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성일시")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="수정일시")
 

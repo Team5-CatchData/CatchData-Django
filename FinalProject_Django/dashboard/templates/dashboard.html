@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Chatbot Service{% endblock %}
+{% block title %}Dashboard - CatchData{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -18,78 +18,178 @@
         margin-bottom: 0.5rem;
     }
 
-    .dashboard-header p {
-        color: #666;
-        font-size: 1.1rem;
+    .filter-section {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
     }
 
-    .dashboard-content {
+    .filter-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-select {
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        background-color: white;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #ff8c42;
+    }
+
+    .filter-button {
+        padding: 0.75rem 2rem;
+        background-color: #ff8c42;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        align-self: end;
+    }
+
+    .filter-button:hover {
+        background-color: #ff7a28;
+    }
+
+    .filter-button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .map-section {
         background-color: #ffffff;
         border-radius: 12px;
         padding: 2rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-
-    .dashboard-card {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 1.5rem;
-        border: 1px solid #e0e0e0;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .dashboard-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-icon {
-        font-size: 2.5rem;
+    .map-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
         margin-bottom: 1rem;
     }
 
-    .card-title {
-        font-size: 1.2rem;
+    .map-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 1.5rem;
+    }
+
+    #map {
+        width: 100%;
+        height: 600px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .restaurant-list {
+        height: 600px;
+        overflow-y: auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .restaurant-list-item {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .restaurant-list-item:hover {
+        background-color: #fff5f0;
+        border-color: #ff8c42;
+        transform: translateX(4px);
+    }
+
+    .restaurant-list-item.active {
+        background-color: #fff5f0;
+        border-color: #ff8c42;
+    }
+
+    .restaurant-list-item h4 {
+        font-size: 1rem;
         font-weight: 600;
         color: #333;
         margin-bottom: 0.5rem;
     }
 
-    .card-description {
+    .restaurant-list-item p {
+        font-size: 0.85rem;
+        color: #666;
+        margin: 0.25rem 0;
+    }
+
+    .restaurant-list-item .category {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: #ff8c42;
+        color: white;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+
+    .restaurant-list-item .waiting {
+        color: #ff8c42;
+        font-weight: 600;
+    }
+
+    .empty-list {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #999;
+    }
+
+    .result-info {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
         color: #666;
         font-size: 0.95rem;
     }
 
-    .stats-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-
-    .stat-box {
-        background-color: #fff5f0;
-        border-radius: 8px;
-        padding: 1.25rem;
-        border-left: 4px solid #ff8c42;
-    }
-
-    .stat-label {
-        font-size: 0.85rem;
-        color: #666;
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-value {
-        font-size: 2rem;
-        font-weight: 700;
+    .loading {
+        text-align: center;
+        padding: 1rem;
         color: #ff8c42;
     }
 </style>
@@ -98,61 +198,302 @@
 {% block content %}
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1>&#xB300;&#xC2DC;&#xBCF4;&#xB4DC;</h1>
-        <p>&#xC11C;&#xBE44;&#xC2A4; &#xD604;&#xD669;&#xC744; &#xD655;&#xC778;&#xD558;&#xC138;&#xC694;</p>
+        <h1>대시보드 - 레스토랑 지도</h1>
     </div>
 
-    <div class="stats-container">
-        <div class="stat-box">
-            <div class="stat-label">&#xC624;&#xB298; &#xC9C8;&#xBB38; &#xC218;</div>
-            <div class="stat-value">42</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-label">&#xCD1D; &#xCD94;&#xCC9C; &#xB9DB;&#xC9D1;</div>
-            <div class="stat-value">128</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-label">&#xD3C9;&#xADE0; &#xC751;&#xB2F5; &#xC2DC;&#xAC04;</div>
-            <div class="stat-value">1.2s</div>
-        </div>
+    <div class="filter-section">
+        <h2 class="filter-title">레스토랑 검색</h2>
+        <form class="filter-form" id="filterForm">
+            <div class="filter-group">
+                <label class="filter-label" for="regionSelect">지역</label>
+                <select class="filter-select" id="regionSelect" name="region">
+                    <option value="">선택</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="citySelect">도시</label>
+                <select class="filter-select" id="citySelect" name="city">
+                    <option value="">전체</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label" for="categorySelect">카테고리</label>
+                <select class="filter-select" id="categorySelect" name="category">
+                    <option value="">전체</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <button type="submit" class="filter-button" id="filterButton">검색</button>
+            </div>
+        </form>
+        <div class="result-info" id="resultInfo" style="display: none;"></div>
     </div>
 
-    <div class="dashboard-content">
-        <h2 style="margin-bottom: 1.5rem; color: #333;">&#xC11C;&#xBE44;&#xC2A4; &#xAE30;&#xB2A5;</h2>
-
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="card-icon">&#129302;</div>
-                <div class="card-title">LLM &#xCC57;&#xBD07;</div>
-                <div class="card-description">
-                    &#xB9DB;&#xC9D1; &#xCD94;&#xCC9C;&#xC744; &#xC704;&#xD55C; AI &#xCC57;&#xBD07;&#xACFC; &#xB300;&#xD654;&#xD558;&#xC138;&#xC694;
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="card-icon">&#127869;</div>
-                <div class="card-title">&#xB9DB;&#xC9D1; &#xCD94;&#xCC9C;</div>
-                <div class="card-description">
-                    AI&#xAC00; &#xC120;&#xBCC4;&#xD55C; &#xCD5C;&#xACE0;&#xC758; &#xB9DB;&#xC9D1;&#xC744; &#xCD94;&#xCC9C;&#xBC1B;&#xC73C;&#xC138;&#xC694;
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="card-icon">&#128202;</div>
-                <div class="card-title">&#xD1B5;&#xACC4; &#xBD84;&#xC11D;</div>
-                <div class="card-description">
-                    &#xC0AC;&#xC6A9; &#xD328;&#xD134;&#xACFC; &#xC778;&#xAE30; &#xB9DB;&#xC9D1; &#xD1B5;&#xACC4;&#xB97C; &#xD655;&#xC778;&#xD558;&#xC138;&#xC694;
-                </div>
-            </div>
-
-            <div class="dashboard-card">
-                <div class="card-icon">&#11088;</div>
-                <div class="card-title">&#xC778;&#xAE30; &#xB9DB;&#xC9D1;</div>
-                <div class="card-description">
-                    &#xAC00;&#xC7A5; &#xB9CE;&#xC774; &#xCD94;&#xCC9C;&#xB41C; &#xC778;&#xAE30; &#xB9DB;&#xC9D1; &#xBAA9;&#xB85D;
+    <div class="map-section">
+        <h2 class="map-title">레스토랑 위치</h2>
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="restaurant-list" id="restaurantList">
+                <div class="empty-list">
+                    <p>검색 버튼을 눌러 레스토랑을 찾아보세요</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_map_api_key }}"></script>
+<script>
+    let map;
+    let markers = [];
+    let regionCitiesMap = {}; // 지역-도시 매핑 저장
+
+    // 페이지 로드 시 지도 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+        loadFilterOptions();
+
+        // 지역 선택 이벤트 리스너
+        document.getElementById('regionSelect').addEventListener('change', function() {
+            updateCityOptions(this.value);
+        });
+    });
+
+    // 카카오맵 초기화
+    function initMap() {
+        const container = document.getElementById('map');
+        const options = {
+            center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울 시청 좌표
+            level: 8
+        };
+        map = new kakao.maps.Map(container, options);
+    }
+
+    // 필터 옵션 로드
+    async function loadFilterOptions() {
+        try {
+            const response = await fetch("{% url 'dashboard:filter_options' %}");
+            const data = await response.json();
+
+            // 지역-도시 매핑 저장
+            regionCitiesMap = data.region_cities;
+
+            // 지역 옵션 채우기
+            const regionSelect = document.getElementById('regionSelect');
+            data.regions.forEach(region => {
+                if (region) {
+                    const option = document.createElement('option');
+                    option.value = region;
+                    option.textContent = region;
+                    regionSelect.appendChild(option);
+                }
+            });
+
+            // 도시 셀렉트는 초기에 비활성화
+            const citySelect = document.getElementById('citySelect');
+            citySelect.disabled = true;
+
+            // 카테고리 옵션 채우기
+            const categorySelect = document.getElementById('categorySelect');
+            data.categories.forEach(category => {
+                if (category) {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categorySelect.appendChild(option);
+                }
+            });
+        } catch (error) {
+            console.error('Error loading filter options:', error);
+        }
+    }
+
+    // 지역 선택에 따라 도시 옵션 업데이트
+    function updateCityOptions(selectedRegion) {
+        const citySelect = document.getElementById('citySelect');
+
+        // 기존 도시 옵션 제거 (첫 번째 "전체" 옵션 제외)
+        while (citySelect.options.length > 1) {
+            citySelect.remove(1);
+        }
+
+        if (!selectedRegion) {
+            // 지역이 선택되지 않으면 도시 셀렉트 비활성화
+            citySelect.disabled = true;
+            citySelect.value = '';
+        } else {
+            // 선택된 지역의 도시 목록 추가
+            citySelect.disabled = false;
+            const cities = regionCitiesMap[selectedRegion] || [];
+
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+
+            // 도시 선택 초기화
+            citySelect.value = '';
+        }
+    }
+
+    // 폼 제출 처리
+    document.getElementById('filterForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const filterButton = document.getElementById('filterButton');
+        const resultInfo = document.getElementById('resultInfo');
+
+        filterButton.disabled = true;
+        filterButton.textContent = '검색 중...';
+        resultInfo.style.display = 'none';
+
+        const region = document.getElementById('regionSelect').value;
+        const city = document.getElementById('citySelect').value;
+        const category = document.getElementById('categorySelect').value;
+
+        try {
+            const response = await fetch("{% url 'dashboard:filter_restaurants' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ region, city, category })
+            });
+
+            const data = await response.json();
+
+            if (data.restaurants && data.restaurants.length > 0) {
+                displayMarkers(data.restaurants);
+                displayRestaurantList(data.restaurants);
+                resultInfo.textContent = `총 ${data.count}개의 레스토랑을 찾았습니다.`;
+                resultInfo.style.display = 'block';
+            } else {
+                clearMarkers();
+                clearRestaurantList();
+                resultInfo.textContent = '검색 결과가 없습니다.';
+                resultInfo.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error filtering restaurants:', error);
+            resultInfo.textContent = '검색 중 오류가 발생했습니다.';
+            resultInfo.style.display = 'block';
+        } finally {
+            filterButton.disabled = false;
+            filterButton.textContent = '검색';
+        }
+    });
+
+    // 마커 표시
+    function displayMarkers(restaurants) {
+        // 기존 마커 제거
+        clearMarkers();
+
+        const bounds = new kakao.maps.LatLngBounds();
+
+        restaurants.forEach(restaurant => {
+            const position = new kakao.maps.LatLng(restaurant.y, restaurant.x);
+
+            // 마커 생성
+            const marker = new kakao.maps.Marker({
+                map: map,
+                position: position
+            });
+
+            // 인포윈도우 생성
+            const infowindow = new kakao.maps.InfoWindow({
+                content: `
+                    <div style="padding:10px; min-width:200px;">
+                        <strong>${restaurant.name}</strong><br>
+                        <span style="color:#666;">${restaurant.category}</span><br>
+                        <span style="color:#ff8c42;">대기: ${restaurant.waitting}</span>
+                    </div>
+                `
+            });
+
+            // 마커 클릭 이벤트
+            kakao.maps.event.addListener(marker, 'click', function() {
+                infowindow.open(map, marker);
+            });
+
+            markers.push(marker);
+            bounds.extend(position);
+        });
+
+        // 지도 범위 재설정
+        if (restaurants.length > 0) {
+            map.setBounds(bounds);
+        }
+    }
+
+    // 마커 제거
+    function clearMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+    }
+
+    // 레스토랑 리스트 표시
+    function displayRestaurantList(restaurants) {
+        const listContainer = document.getElementById('restaurantList');
+        listContainer.innerHTML = '';
+
+        if (restaurants.length === 0) {
+            listContainer.innerHTML = '<div class="empty-list"><p>검색 결과가 없습니다.</p></div>';
+            return;
+        }
+
+        restaurants.forEach((restaurant, index) => {
+            const item = document.createElement('div');
+            item.className = 'restaurant-list-item';
+            item.dataset.index = index;
+            item.innerHTML = `
+                <h4>${restaurant.name}</h4>
+                <p>${restaurant.region} ${restaurant.city}</p>
+                <span class="category">${restaurant.category}</span>
+                <p class="waiting">대기: ${restaurant.waitting}</p>
+            `;
+
+            // 리스트 아이템 클릭 시 지도에서 해당 마커 위치로 이동 및 인포윈도우 표시
+            item.addEventListener('click', function() {
+                // 모든 리스트 아이템에서 active 클래스 제거
+                document.querySelectorAll('.restaurant-list-item').forEach(i => i.classList.remove('active'));
+                // 현재 아이템에 active 클래스 추가
+                this.classList.add('active');
+
+                // 지도 중심을 해당 레스토랑 위치로 이동
+                const position = new kakao.maps.LatLng(restaurant.y, restaurant.x);
+                map.setCenter(position);
+                map.setLevel(3); // 줌 레벨 조정
+
+                // 해당 마커의 인포윈도우 표시
+                const marker = markers[index];
+                const infowindow = new kakao.maps.InfoWindow({
+                    content: `
+                        <div style="padding:10px; min-width:200px;">
+                            <strong>${restaurant.name}</strong><br>
+                            <span style="color:#666;">${restaurant.category}</span><br>
+                            <span style="color:#ff8c42;">대기: ${restaurant.waitting}</span>
+                        </div>
+                    `
+                });
+                infowindow.open(map, marker);
+            });
+
+            listContainer.appendChild(item);
+        });
+    }
+
+    // 레스토랑 리스트 초기화
+    function clearRestaurantList() {
+        const listContainer = document.getElementById('restaurantList');
+        listContainer.innerHTML = '<div class="empty-list"><p>검색 결과가 없습니다.</p></div>';
+    }
+</script>
 {% endblock %}

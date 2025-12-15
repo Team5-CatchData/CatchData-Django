@@ -128,3 +128,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Kakao Map API Key
+KAKAO_MAP_API_KEY = os.getenv('KAKAO_MAP_API_KEY', '')
