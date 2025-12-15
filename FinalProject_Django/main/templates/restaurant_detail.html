@@ -186,7 +186,7 @@
         <div class="info-section">
             <div class="info-row">
                 <div class="info-label">레스토랑 ID</div>
-                <div class="info-value">{{ restaurant.restaurant_id }}</div>
+                <div class="info-value">{{ restaurant.restaurant_ID }}</div>
             </div>
 
             {% if restaurant.phone %}
@@ -195,6 +195,13 @@
                 <div class="info-value">
                     <a href="tel:{{ restaurant.phone }}" class="phone-link">{{ restaurant.phone }}</a>
                 </div>
+            </div>
+            {% endif %}
+
+            {% if restaurant.address %}
+            <div class="info-row">
+                <div class="info-label">주소</div>
+                <div class="info-value">{{ restaurant.address }}</div>
             </div>
             {% endif %}
 

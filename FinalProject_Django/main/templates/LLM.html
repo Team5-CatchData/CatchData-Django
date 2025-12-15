@@ -288,7 +288,7 @@
             removeLoadingMessage(loadingId);
 
             if (data.answer) {
-                addMessage('assistant', data.answer, data.restaurantID);
+                addMessage('assistant', data.answer, data.restaurant_ID);
             } else {
                 addMessage('assistant', '\uC8C4\uC1A1\uD569\uB2C8\uB2E4. \uC751\uB2F5\uC744 \uC0DD\uC131\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.');
             }
@@ -324,14 +324,14 @@
 
             // 테스트용 레스토랑 이름 매핑
             const restaurantNames = {
-                '2154588': '빨간어묵',
-                '213213': '버거걱'
+                2154588: '빨간어묵',
+                213213: '버거걱'
             };
 
             restaurantIDs.forEach(restaurantID => {
                 const button = document.createElement('button');
                 button.className = 'restaurant-button';
-                const restaurantName = restaurantNames[restaurantID] || `레스토랑 ${restaurantID}`;
+                const restaurantName = restaurantNames[restaurant_ID] || `레스토랑 ${restaurantID}`;
                 button.textContent = `${restaurantName} 예약하기`;
                 button.onclick = () => handleReservation(restaurantID, restaurantName);
                 buttonsContainer.appendChild(button);
