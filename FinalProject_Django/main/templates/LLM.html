@@ -331,7 +331,7 @@
             restaurantIDs.forEach(restaurantID => {
                 const button = document.createElement('button');
                 button.className = 'restaurant-button';
-                const restaurantName = restaurantNames[restaurant_ID] || `레스토랑 ${restaurantID}`;
+                const restaurantName = restaurantNames[restaurantID] || `레스토랑 ${restaurantID}`;
                 button.textContent = `${restaurantName} 예약하기`;
                 button.onclick = () => handleReservation(restaurantID, restaurantName);
                 buttonsContainer.appendChild(button);
