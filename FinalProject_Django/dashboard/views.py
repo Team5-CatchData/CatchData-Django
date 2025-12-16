@@ -16,6 +16,101 @@ def dashboard(request):
 
 
 @require_http_methods(["GET"])
+def get_top_restaurants(request):
+    """대기 인원 수 기반 Top 5 레스토랑 조회 API"""
+    try:
+        # Restaurant와 MapSearchHistory 모두에서 조회
+        from django.db.models import Q
+
+        # Restaurant 모델에서 대기 인원이 있는 레스토랑
+        restaurant_top = Restaurant.objects.filter(
+            waitting__isnull=False
+        ).order_by('-waitting')[:5]
+
+        # MapSearchHistory 모델에서 대기 인원이 있는 레스토랑
+        map_top = MapSearchHistory.objects.filter(
+            waitting__isnull=False
+        ).order_by('-waitting')[:5]
+
+        # 두 모델의 데이터를 합쳐서 정렬
+        all_restaurants = []
+
+        for r in restaurant_top:
+            all_restaurants.append({
+                'name': r.name,
+                'waitting': r.waitting,
+                'category': r.category,
+                'restaurant_ID': r.restaurant_ID
+            })
+
+        for m in map_top:
+            all_restaurants.append({
+                'name': m.name,
+                'waitting': m.waitting,
+                'category': m.category,
+                'restaurant_ID': m.restaurant_ID
+            })
+
+        # 대기 인원 수로 정렬하고 상위 5개만 선택
+        all_restaurants.sort(key=lambda x: x['waitting'], reverse=True)
+        top_5 = all_restaurants[:5]
+
+        return JsonResponse({
+            'top_restaurants': top_5
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["GET"])
+def get_top_categories(request):
+    """카테고리별 대기 인원 합산 Top 5 조회 API"""
+    try:
+        from django.db.models import Sum
+        from collections import defaultdict
+
+        category_waitting = defaultdict(int)
+
+        # Restaurant 모델에서 카테고리별 대기 인원 합산
+        restaurant_categories = Restaurant.objects.filter(
+            waitting__isnull=False,
+            category__isnull=False
+        ).exclude(category='').values('category').annotate(
+            total_waitting=Sum('waitting')
+        )
+
+        for item in restaurant_categories:
+            category_waitting[item['category']] += item['total_waitting']
+
+        # MapSearchHistory 모델에서 카테고리별 대기 인원 합산
+        map_categories = MapSearchHistory.objects.filter(
+            waitting__isnull=False,
+            category__isnull=False
+        ).exclude(category='').values('category').annotate(
+            total_waitting=Sum('waitting')
+        )
+
+        for item in map_categories:
+            category_waitting[item['category']] += item['total_waitting']
+
+        # 딕셔너리를 리스트로 변환하고 정렬
+        category_list = [
+            {'category': category, 'total_waitting': total}
+            for category, total in category_waitting.items()
+        ]
+        category_list.sort(key=lambda x: x['total_waitting'], reverse=True)
+
+        # Top 5만 선택
+        top_5_categories = category_list[:5]
+
+        return JsonResponse({
+            'top_categories': top_5_categories
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["GET"])
 def get_filter_options(request):
     """필터 옵션 조회 API"""
     try:
@@ -99,7 +194,7 @@ def filter_restaurants(request):
                     'city': r.city,
                     'x': r.x,
                     'y': r.y,
-                    'waitting': 0  # Restaurant 모델에는 대기시간 없음
+                    'waitting': r.waitting if r.waitting is not None else 0
                 })
 
         # MapSearchHistory 모델 결과 변환
