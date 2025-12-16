@@ -192,6 +192,270 @@
         padding: 1rem;
         color: #ff8c42;
     }
+
+    .top-restaurants-section {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .top-restaurants-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .top-restaurant-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .top-restaurant-item:hover {
+        background-color: #fff5f0;
+        transform: translateX(4px);
+    }
+
+    .top-restaurant-rank {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ff8c42;
+        min-width: 40px;
+        margin-right: 1rem;
+    }
+
+    .top-restaurant-info {
+        flex: 1;
+    }
+
+    .top-restaurant-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .top-restaurant-category {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .top-restaurant-waitting {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ff8c42;
+        margin-left: auto;
+    }
+
+    .top-restaurant-bar {
+        width: 100%;
+        height: 8px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+    }
+
+    .top-restaurant-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff8c42, #ff7a28);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+
+    .top-categories-section {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .top-categories-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .category-tag {
+        position: relative;
+        padding: 1.5rem 2rem;
+        background: linear-gradient(135deg, #fff5f0, #ffffff);
+        border: 2px solid #ff8c42;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 150px;
+        text-align: center;
+    }
+
+    .category-tag:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(255, 140, 66, 0.3);
+        background: linear-gradient(135deg, #ff8c42, #ff7a28);
+    }
+
+    .category-tag:hover .category-tag-name,
+    .category-tag:hover .category-tag-count {
+        color: white;
+    }
+
+    .category-tag-rank {
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        background: #ff8c42;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(255, 140, 66, 0.4);
+    }
+
+    .category-tag-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 0.5rem;
+        transition: color 0.3s ease;
+    }
+
+    .category-tag-count {
+        font-size: 1rem;
+        color: #ff8c42;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .category-analytics-section {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .category-analytics-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-analytics-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    .wordcloud-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        min-height: 300px;
+        background: linear-gradient(135deg, #fff5f0 0%, #ffffff 100%);
+        border-radius: 12px;
+    }
+
+    .top-categories-compact {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .category-compact-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .category-compact-item:hover {
+        background-color: #fff5f0;
+        border-color: #ff8c42;
+        transform: translateX(4px);
+    }
+
+    .category-compact-rank {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ff8c42;
+        min-width: 35px;
+        margin-right: 0.75rem;
+    }
+
+    .category-compact-info {
+        flex: 1;
+    }
+
+    .category-compact-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .category-compact-count {
+        font-size: 0.85rem;
+        color: #ff8c42;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .category-analytics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .wordcloud-word {
+        display: inline-block;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        user-select: none;
+    }
+
+    .wordcloud-word:hover {
+        transform: scale(1.2);
+        background-color: rgba(255, 140, 66, 0.2);
+    }
+
+    /* 워드클라우드 크기 레벨 (웨이팅 수에 따라) */
+    .word-size-1 { font-size: 0.9rem; color: #ffa366; }
+    .word-size-2 { font-size: 1.2rem; color: #ff9254; }
+    .word-size-3 { font-size: 1.5rem; color: #ff8c42; }
+    .word-size-4 { font-size: 2rem; color: #ff7a28; }
+    .word-size-5 { font-size: 2.5rem; color: #ff6810; }
 </style>
 {% endblock %}
 
@@ -243,6 +507,31 @@
             </div>
         </div>
     </div>
+
+    <div class="category-analytics-section">
+        <h2 class="category-analytics-title">📊 카테고리 분석</h2>
+        <div class="category-analytics-grid">
+            <div>
+                <h3 style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">☁️ 워드클라우드</h3>
+                <div class="wordcloud-container" id="wordcloudContainer">
+                    <div class="loading">데이터를 불러오는 중...</div>
+                </div>
+            </div>
+            <div>
+                <h3 style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">🔥 인기 TOP 5</h3>
+                <div class="top-categories-compact" id="topCategoriesCompact">
+                    <div class="loading">데이터를 불러오는 중...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-restaurants-section">
+        <h2 class="top-restaurants-title">🔥 인기 레스토랑 TOP 5</h2>
+        <div id="topRestaurantsList">
+            <div class="loading">데이터를 불러오는 중...</div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -257,6 +546,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         initMap();
         loadFilterOptions();
+        loadTopRestaurants();
+        loadTopCategories();
+        loadWordCloud();
 
         // 지역 선택 이벤트 리스너
         document.getElementById('regionSelect').addEventListener('change', function() {
@@ -413,7 +705,7 @@
                     <div style="padding:10px; min-width:200px;">
                         <strong>${restaurant.name}</strong><br>
                         <span style="color:#666;">${restaurant.category}</span><br>
-                        <span style="color:#ff8c42;">대기: ${restaurant.waitting}</span>
+                        <span style="color:#ff8c42;">대기: ${restaurant.waitting}명</span>
                     </div>
                 `
             });
@@ -457,33 +749,16 @@
                 <h4>${restaurant.name}</h4>
                 <p>${restaurant.region} ${restaurant.city}</p>
                 <span class="category">${restaurant.category}</span>
-                <p class="waiting">대기: ${restaurant.waitting}</p>
+                <p class="waiting">대기: ${restaurant.waitting}명</p>
             `;
 
-            // 리스트 아이템 클릭 시 지도에서 해당 마커 위치로 이동 및 인포윈도우 표시
+            // 리스트 아이템 클릭 시 상세 페이지로 이동
             item.addEventListener('click', function() {
-                // 모든 리스트 아이템에서 active 클래스 제거
-                document.querySelectorAll('.restaurant-list-item').forEach(i => i.classList.remove('active'));
-                // 현재 아이템에 active 클래스 추가
-                this.classList.add('active');
-
-                // 지도 중심을 해당 레스토랑 위치로 이동
-                const position = new kakao.maps.LatLng(restaurant.y, restaurant.x);
-                map.setCenter(position);
-                map.setLevel(3); // 줌 레벨 조정
-
-                // 해당 마커의 인포윈도우 표시
-                const marker = markers[index];
-                const infowindow = new kakao.maps.InfoWindow({
-                    content: `
-                        <div style="padding:10px; min-width:200px;">
-                            <strong>${restaurant.name}</strong><br>
-                            <span style="color:#666;">${restaurant.category}</span><br>
-                            <span style="color:#ff8c42;">대기: ${restaurant.waitting}</span>
-                        </div>
-                    `
-                });
-                infowindow.open(map, marker);
+                if (restaurant.restaurant_ID) {
+                    window.location.href = `/restaurant/${restaurant.restaurant_ID}/`;
+                } else {
+                    alert('레스토랑 정보를 찾을 수 없습니다.');
+                }
             });
 
             listContainer.appendChild(item);
@@ -494,6 +769,182 @@
     function clearRestaurantList() {
         const listContainer = document.getElementById('restaurantList');
         listContainer.innerHTML = '<div class="empty-list"><p>검색 결과가 없습니다.</p></div>';
+    }
+
+    // Top 5 레스토랑 로드
+    async function loadTopRestaurants() {
+        try {
+            const response = await fetch("{% url 'dashboard:top_restaurants' %}");
+            const data = await response.json();
+
+            if (data.top_restaurants && data.top_restaurants.length > 0) {
+                displayTopRestaurants(data.top_restaurants);
+            } else {
+                document.getElementById('topRestaurantsList').innerHTML = '<div class="empty-list"><p>대기 중인 레스토랑이 없습니다.</p></div>';
+            }
+        } catch (error) {
+            console.error('Error loading top restaurants:', error);
+            document.getElementById('topRestaurantsList').innerHTML = '<div class="empty-list"><p>데이터를 불러오는 데 실패했습니다.</p></div>';
+        }
+    }
+
+    // Top 5 레스토랑 표시
+    function displayTopRestaurants(restaurants) {
+        const container = document.getElementById('topRestaurantsList');
+        container.innerHTML = '';
+
+        // 최대 대기 인원 수 계산 (바 차트 비율 계산용)
+        const maxWaitting = Math.max(...restaurants.map(r => r.waitting));
+
+        restaurants.forEach((restaurant, index) => {
+            const barWidth = (restaurant.waitting / maxWaitting) * 100;
+
+            const item = document.createElement('div');
+            item.className = 'top-restaurant-item';
+            item.innerHTML = `
+                <div class="top-restaurant-rank">${index + 1}</div>
+                <div class="top-restaurant-info">
+                    <div class="top-restaurant-name">${restaurant.name}</div>
+                    <div class="top-restaurant-category">${restaurant.category}</div>
+                    <div class="top-restaurant-bar">
+                        <div class="top-restaurant-bar-fill" style="width: ${barWidth}%"></div>
+                    </div>
+                </div>
+                <div class="top-restaurant-waitting">${restaurant.waitting}명</div>
+            `;
+
+            // 클릭 시 상세 페이지로 이동
+            item.addEventListener('click', function() {
+                if (restaurant.restaurant_ID) {
+                    window.location.href = `/restaurant/${restaurant.restaurant_ID}/`;
+                }
+            });
+
+            container.appendChild(item);
+        });
+    }
+
+    // Top 5 카테고리 로드
+    async function loadTopCategories() {
+        try {
+            const response = await fetch("{% url 'dashboard:top_categories' %}");
+            const data = await response.json();
+
+            if (data.top_categories && data.top_categories.length > 0) {
+                displayTopCategoriesCompact(data.top_categories);
+            } else {
+                document.getElementById('topCategoriesCompact').innerHTML = '<div class="empty-list"><p>카테고리 데이터가 없습니다.</p></div>';
+            }
+        } catch (error) {
+            console.error('Error loading top categories:', error);
+            document.getElementById('topCategoriesCompact').innerHTML = '<div class="empty-list"><p>데이터를 불러오는 데 실패했습니다.</p></div>';
+        }
+    }
+
+    // Top 5 카테고리 표시 (Compact 버전)
+    function displayTopCategoriesCompact(categories) {
+        const container = document.getElementById('topCategoriesCompact');
+        container.innerHTML = '';
+
+        categories.forEach((category, index) => {
+            const item = document.createElement('div');
+            item.className = 'category-compact-item';
+            item.innerHTML = `
+                <div class="category-compact-rank">${index + 1}</div>
+                <div class="category-compact-info">
+                    <div class="category-compact-name">${category.category}</div>
+                    <div class="category-compact-count">대기: ${category.total_waitting}명</div>
+                </div>
+            `;
+
+            // 클릭 시 해당 카테고리로 필터링
+            item.addEventListener('click', function() {
+                const categorySelect = document.getElementById('categorySelect');
+                categorySelect.value = category.category;
+
+                // 검색 폼 제출
+                document.getElementById('filterForm').dispatchEvent(new Event('submit'));
+
+                // 페이지 스크롤을 지도 섹션으로 이동
+                document.querySelector('.map-section').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            container.appendChild(item);
+        });
+    }
+
+    // 워드클라우드 로드
+    async function loadWordCloud() {
+        try {
+            const response = await fetch("{% url 'dashboard:top_categories' %}");
+            const data = await response.json();
+
+            if (data.top_categories && data.top_categories.length > 0) {
+                displayWordCloud(data.top_categories);
+            } else {
+                document.getElementById('wordcloudContainer').innerHTML = '<div class="empty-list"><p>카테고리 데이터가 없습니다.</p></div>';
+            }
+        } catch (error) {
+            console.error('Error loading wordcloud:', error);
+            document.getElementById('wordcloudContainer').innerHTML = '<div class="empty-list"><p>데이터를 불러오는 데 실패했습니다.</p></div>';
+        }
+    }
+
+    // 워드클라우드 표시
+    function displayWordCloud(categories) {
+        const container = document.getElementById('wordcloudContainer');
+        container.innerHTML = '';
+
+        if (categories.length === 0) {
+            container.innerHTML = '<div class="empty-list"><p>카테고리 데이터가 없습니다.</p></div>';
+            return;
+        }
+
+        // 최대 대기 인원 수 계산
+        const maxWaitting = Math.max(...categories.map(c => c.total_waitting));
+        const minWaitting = Math.min(...categories.map(c => c.total_waitting));
+
+        // 각 카테고리를 워드클라우드 형식으로 표시
+        categories.forEach(category => {
+            // 대기 인원 수에 따라 크기 레벨 계산 (1-5)
+            let sizeLevel;
+            const range = maxWaitting - minWaitting;
+            if (range === 0) {
+                sizeLevel = 3;
+            } else {
+                const normalized = (category.total_waitting - minWaitting) / range;
+                sizeLevel = Math.ceil(normalized * 5) || 1;
+            }
+
+            const word = document.createElement('span');
+            word.className = `wordcloud-word word-size-${sizeLevel}`;
+            word.textContent = category.category;
+            word.title = `대기: ${category.total_waitting}명`;
+
+            // 클릭 시 해당 카테고리로 필터링
+            word.addEventListener('click', function() {
+                const categorySelect = document.getElementById('categorySelect');
+                categorySelect.value = category.category;
+
+                // 검색 폼 제출
+                document.getElementById('filterForm').dispatchEvent(new Event('submit'));
+
+                // 페이지 스크롤을 지도 섹션으로 이동
+                document.querySelector('.map-section').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            container.appendChild(word);
+        });
+
+        // 워드 위치 랜덤화 (자연스러운 워드클라우드 느낌)
+        const words = container.querySelectorAll('.wordcloud-word');
+        const wordsArray = Array.from(words);
+
+        // Fisher-Yates shuffle 알고리즘으로 섞기
+        for (let i = wordsArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            container.insertBefore(wordsArray[j], wordsArray[i]);
+        }
     }
 </script>
 {% endblock %}
