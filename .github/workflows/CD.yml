@@ -11,9 +11,9 @@ jobs:
       - name: Deploy EC2 via GitActions
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.django_EC2_PUBLIC_IP }}
+          host: ${{ secrets.DJANGO_EC2_PUBLIC_IP }}
           username: ubuntu
-          key: ${{ secrets.django_SSH_PRIVATE_KEY }}
+          key: ${{ secrets.DJANGO_SSH_PRIVATE_KEY }}
           port: 22
           
           script: |

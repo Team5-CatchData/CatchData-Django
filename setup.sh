@@ -72,7 +72,7 @@ DEBUG=False
 ALLOWED_HOSTS=your-domain.com,your-ec2-ip
 
 # Kakao Map API
-KAKAO_MAP_API_KEY=f2837d1902b6ad83d2eb931b616129fc
+KAKAO_MAP_API_KEY=your-kakao-map-api-key
 
 # Database (if using PostgreSQL)
 # DB_NAME=catchdata
