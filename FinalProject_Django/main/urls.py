@@ -1,10 +1,12 @@
 from django.urls import path
 
-from . import views
+from . import views as main_views
+from restaurants import views as restaurant_views
 
 app_name = 'main'
 urlpatterns = [
-    path('', views.llm, name='llm'),
-    path('api/chat/', views.chat_api, name='chat_api'),
-    path('restaurant/<str:restaurant_id>/', views.restaurant_detail, name='restaurant_detail'),
+    path('', main_views.llm, name='llm'),
+    path('api/chat/', main_views.chat_api, name='chat_api'),
+    path('restaurant/<str:restaurant_id>/', main_views.restaurant_detail, name='restaurant_detail'),
+    path('api/ragchat/', restaurant_views.rag_chat_api, name='chat_api'),
 ]
