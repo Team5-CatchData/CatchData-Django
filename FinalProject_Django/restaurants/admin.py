@@ -13,3 +13,4 @@ class RestaurantAdmin(admin.ModelAdmin):
         return "No embedding data"
 
     embedding_preview.short_description = "Embedding Vector"
+    
