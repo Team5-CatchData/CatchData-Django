@@ -30,8 +30,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # ALLOWED_HOSTS도 .env에서 설정
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
-
+#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
