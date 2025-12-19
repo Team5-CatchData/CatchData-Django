@@ -1,11 +1,8 @@
 import os
-
-import google.generativeai as genai
+import google.genai as genai
 import psycopg
 from django.core.management.base import BaseCommand
-
 from RAG.models import EmbeddedData
-
 
 class Command(BaseCommand):
     help = 'Load restaurant data from Redshift and save to EmbeddedData'
@@ -22,85 +19,67 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('GEMINI_API_KEY is missing in .env!'))
             return
 
-        if not all([
-            redshift_host, redshift_port, redshift_user, redshift_password, redshift_db
-        ]):
-            self.stdout.write(
-                self.style.ERROR('Redshift connection info is missing in .env!')
-            )
+        if not all([redshift_host, redshift_port, redshift_user, redshift_password, redshift_db]):
+            self.stdout.write(self.style.ERROR('Redshift connection info is missing in .env!'))
             return
 
-        genai.configure(api_key=gemini_api_key)
-
+        client = genai.Client(api_key=gemini_api_key)
         conn = None
         cursor = None
-
+        count = 0
+        
         try:
             conn = psycopg.connect(
-                host=redshift_host,
-                port=redshift_port,
-                user=redshift_user,
-                password=redshift_password,
-                dbname=redshift_db
+                host=redshift_host, port=redshift_port, user=redshift_user,
+                password=redshift_password, dbname=redshift_db,
+                sslmode='require', client_encoding='UTF8'
             )
             cursor = conn.cursor()
             self.stdout.write(self.style.SUCCESS("Connected to Redshift"))
 
-            # SQL 쿼리
             query = """
-                SELECT
-                    k.id,
-                    k.place_name,
-                    k.category_name,
-                    k.road_address_name,
-                    k.phone,
-                    k.rating,
-                    k.img_url,
-                    k.x,
-                    k.y,
-                    COALESCE(w.waiting, 0) as waiting_count
+                SELECT k.id, k.place_name, k.category_name, k.road_address_name,
+                       k.phone, k.rating, k.img_url, k.x, k.y,
+                       COALESCE(w.waiting, 0) as waiting_count
                 FROM raw_data.kakao_crawl k
-                LEFT JOIN analytics.realtime_waiting w
+                LEFT JOIN analytics.realtime_waiting w 
                     ON CAST(k.id AS VARCHAR) = w.id
                 LIMIT 10
             """
-            # LIMIT 10은 테스트용입니다. 운영 시 제거하세요.
 
             cursor.execute(query)
             rows = cursor.fetchall()
 
-            count = 0
             for row in rows:
-                (
-                    r_id, name, category, address, phone,
-                    rating, img_url, x, y, waiting
-                ) = row
+                (r_id, name, category, address, phone, rating, img_url, x, y, waiting) = row
 
                 if EmbeddedData.objects.filter(name=name).exists():
-                    self.stdout.write(
-                        self.style.WARNING(f"Skipping {name} (Already exists)")
-                    )
+                    self.stdout.write(self.style.WARNING(f"Skipping {name} (Already exists)"))
                     continue
 
+                # [계산] 웨이팅 팀당 10분
+                waiting_count = int(waiting) if waiting else 0
+                estimated_time = waiting_count * 10
+
+                # [텍스트] 임베딩용 설명 생성
                 desc_text = (
-                    f"맛집 이름: {name}, 카테고리: {category}, "
+                    f"맛집 이름: {name}, 카테고리: {category}. "
+                    f"현재 대기 팀: {waiting_count}팀, 예상 대기시간: {estimated_time}분. "
                     f"주소: {address}, 전화번호: {phone or '없음'}. "
                     f"평점: {rating}점."
                 )
 
                 embedding_vector = None
                 try:
-                    response = genai.embed_content(
-                        model="models/text-embedding-004",
+                    response = client.models.embed_content(
+                        model="text-embedding-004",
                         content=desc_text,
                         task_type="retrieval_document",
                         title="Restaurant Description"
                     )
                     embedding_vector = response['embedding']
                 except Exception as e:
-                    self.stdout.write(
-                        self.style.ERROR(f"Error embedding {name}: {e}")
-                    )
+                    self.stdout.write(self.style.ERROR(f"Error embedding {name}: {e}"))
                     continue
 
                 if embedding_vector is None:
@@ -118,23 +97,15 @@ class Command(BaseCommand):
                     y=float(y) if y else None,
                     description=desc_text,
                     embedding=embedding_vector,
-                    current_waiting_team=int(waiting) if waiting else 0
+                    current_waiting_team=waiting_count,
+                    estimated_waiting_time=estimated_time
                 )
                 count += 1
-                self.stdout.write(
-                    self.style.SUCCESS(f"Saved: {name} (Waiting: {waiting})")
-                )
+                self.stdout.write(self.style.SUCCESS(f"Saved: {name} (Wait: {estimated_time}min)"))
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Error processing data: {e}"))
         finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
-
-        self.stdout.write(
-            self.style.SUCCESS(
-                f'Successfully loaded {count} restaurants from Redshift!'
-            )
-        )
+            if cursor: cursor.close()
+            if conn: conn.close()
+            self.stdout.write(self.style.SUCCESS(f'Successfully loaded {count} restaurants!'))

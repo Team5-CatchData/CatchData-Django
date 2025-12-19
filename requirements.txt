@@ -17,4 +17,4 @@ requests==2.31.0
 
 psycopg[binary]>=3.1.8
 pgvector
-google-generativeai
+google-genai
