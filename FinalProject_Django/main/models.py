@@ -3,7 +3,7 @@ from django.db import models
 
 class Restaurant(models.Model):
     """레스토랑 정보 모델"""
-    restaurant_ID = models.IntegerField(unique=True, null=True, verbose_name="레스토랑 ID")
+    restaurant_ID = models.IntegerField(unique=True, null=True, verbose_name="레스토랑 ID", primary_key=True)
     name = models.CharField(max_length=200, verbose_name="레스토랑 이름")
     phone = models.CharField(max_length=20, blank=True, verbose_name="전화번호")
     rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True, verbose_name="평점")
