@@ -106,6 +106,8 @@ class Command(BaseCommand):
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Error processing data: {e}"))
         finally:
-            if cursor: cursor.close()
-            if conn: conn.close()
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
             self.stdout.write(self.style.SUCCESS(f'Successfully loaded {count} restaurants!'))
