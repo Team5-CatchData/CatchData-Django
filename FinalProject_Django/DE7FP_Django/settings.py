@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'main',
     'dashboard',
     'pgvector',
-    'restaurants',
+    'RAG',
 ]
 
 MIDDLEWARE = [

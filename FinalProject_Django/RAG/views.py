@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from pgvector.django import CosineDistance
 
-from .models import Restaurant
+from .models import EmbeddedData
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if GEMINI_API_KEY:
@@ -45,7 +45,7 @@ def rag_chat_api(request):
             return JsonResponse({'error': f'임베딩 생성 실패: {str(e)}'}, status=500)
 
         # 1-2. DB에서 유사한 맛집 검색 (Cosine Distance 이용)
-        similar_restaurants = Restaurant.objects.annotate(
+        similar_restaurants = EmbeddedData.objects.annotate(
             distance=CosineDistance('embedding', user_embedding)
         ).order_by('distance')[:4]  # 상위 4개 추출
 

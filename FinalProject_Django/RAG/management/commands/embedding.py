@@ -2,10 +2,10 @@ import os
 import google.generativeai as genai
 import psycopg
 from django.core.management.base import BaseCommand
-from restaurants.models import Restaurant
+from RAG.models import EmbeddedData
 
 class Command(BaseCommand):
-    help = 'Load restaurant data from Redshift (Joined Tables)'
+    help = 'Load restaurant data from Redshift and save to EmbeddedData'
 
     def handle(self, *args, **kwargs):
         gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -64,7 +64,7 @@ class Command(BaseCommand):
             for row in rows:
                 r_id, name, category, address, phone, rating, img_url, x, y, waiting = row
 
-                if Restaurant.objects.filter(name=name).exists():
+                if EmbeddedData.objects.filter(name=name).exists():
                     self.stdout.write(self.style.WARNING(f"Skipping {name} (Already exists)"))
                     continue
 
@@ -90,7 +90,7 @@ class Command(BaseCommand):
                 if embedding_vector is None:
                     continue
 
-                Restaurant.objects.create(
+                EmbeddedData.objects.create(
                     name=name,
                     address=address,
                     category=category,

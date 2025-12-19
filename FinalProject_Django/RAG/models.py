@@ -2,7 +2,7 @@ from django.db import models
 from pgvector.django import VectorField
 
 
-class Restaurant(models.Model):
+class EmbeddedData(models.Model):
     # 기본 정보
     name = models.CharField(max_length=100)      # place_name
     address = models.CharField(max_length=255)   # road_address_name
