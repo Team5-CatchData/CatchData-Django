@@ -13,3 +13,6 @@ class MapSearchHistory(models.Model):
     x = models.FloatField()
     y = models.FloatField()
     waitting = models.IntegerField()
+
+    def __str__(self):
+            return f"{self.name} ({self.region})"

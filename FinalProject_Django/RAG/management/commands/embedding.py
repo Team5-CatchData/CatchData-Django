@@ -1,8 +1,11 @@
 import os
+
 import google.generativeai as genai
 import psycopg
 from django.core.management.base import BaseCommand
+
 from RAG.models import EmbeddedData
+
 
 class Command(BaseCommand):
     help = 'Load restaurant data from Redshift and save to EmbeddedData'
@@ -19,8 +22,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('GEMINI_API_KEY is missing in .env!'))
             return
         
-        if not all([redshift_host, redshift_port, redshift_user, redshift_password, redshift_db]):
-            self.stdout.write(self.style.ERROR('Redshift connection info is missing in .env!'))
+        if not all([
+            redshift_host, redshift_port, redshift_user, redshift_password, redshift_db
+            ]):
+            self.stdout.write(
+                self.style.ERROR('Redshift connection info is missing in .env!')
+                )
             return
 
         genai.configure(api_key=gemini_api_key)
@@ -62,10 +69,14 @@ class Command(BaseCommand):
             
             count = 0
             for row in rows:
-                r_id, name, category, address, phone, rating, img_url, x, y, waiting = row
+                (
+                    r_id, name, category, address, phone, rating, img_url, x, y, waiting
+                 ) = row
 
                 if EmbeddedData.objects.filter(name=name).exists():
-                    self.stdout.write(self.style.WARNING(f"Skipping {name} (Already exists)"))
+                    self.stdout.write(
+                        self.style.WARNING(f"Skipping {name} (Already exists)")
+                        )
                     continue
 
                 desc_text = (
@@ -84,7 +95,9 @@ class Command(BaseCommand):
                     )
                     embedding_vector = response['embedding']
                 except Exception as e:
-                    self.stdout.write(self.style.ERROR(f"Error embedding {name}: {e}"))
+                    self.stdout.write(
+                        self.style.ERROR(f"Error embedding {name}: {e}")
+                        )
                     continue
 
                 if embedding_vector is None:
@@ -105,7 +118,9 @@ class Command(BaseCommand):
                     current_waiting_team=int(waiting) if waiting else 0
                 )
                 count += 1
-                self.stdout.write(self.style.SUCCESS(f"Saved: {name} (Waiting: {waiting})"))
+                self.stdout.write(
+                    self.style.SUCCESS(f"Saved: {name} (Waiting: {waiting})")
+                    )
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Error processing data: {e}"))
@@ -115,4 +130,6 @@ class Command(BaseCommand):
             if conn:
                 conn.close()
 
-        self.stdout.write(self.style.SUCCESS(f'Successfully loaded {count} restaurants from Redshift!'))
+        self.stdout.write(
+            self.style.SUCCESS(f'Successfully loaded {count} restaurants from Redshift!')
+            )
