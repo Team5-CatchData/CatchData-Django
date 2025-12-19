@@ -1,50 +1,80 @@
-import csv
 import os
 import google.generativeai as genai
+import psycopg
 from django.core.management.base import BaseCommand
 from restaurants.models import Restaurant
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-
 class Command(BaseCommand):
-    help = 'Load restaurant data from new CSV format'
+    help = 'Load restaurant data from Redshift (Joined Tables)'
 
     def handle(self, *args, **kwargs):
-        if not GEMINI_API_KEY:
-            self.stdout.write(self.style.ERROR('GEMINI_API_KEY is missing!'))
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        redshift_host = os.getenv("REDSHIFT_HOST")
+        redshift_port = os.getenv("REDSHIFT_PORT")
+        redshift_user = os.getenv("REDSHIFT_USER")
+        redshift_password = os.getenv("REDSHIFT_PASSWORD")
+        redshift_db = os.getenv("REDSHIFT_DB")
+
+        if not gemini_api_key:
+            self.stdout.write(self.style.ERROR('GEMINI_API_KEY is missing in .env!'))
+            return
+        
+        if not all([redshift_host, redshift_port, redshift_user, redshift_password, redshift_db]):
+            self.stdout.write(self.style.ERROR('Redshift connection info is missing in .env!'))
             return
 
-        genai.configure(api_key=GEMINI_API_KEY)
-        
-        csv_path = 'eating_house_20251216.csv'
-        
-        if not os.path.exists(csv_path):
-             self.stdout.write(self.style.ERROR(f'File not found: {csv_path}'))
-             return
+        genai.configure(api_key=gemini_api_key)
 
-        with open(csv_path, newline='', encoding='utf-8') as csvfile:
-            reader = csv.DictReader(csvfile)
-            count = 0
+        conn = None
+        cursor = None
+
+        try:
+            conn = psycopg.connect(
+                host=redshift_host,
+                port=redshift_port,
+                user=redshift_user,
+                password=redshift_password,
+                dbname=redshift_db
+            )
+            cursor = conn.cursor()
+            self.stdout.write(self.style.SUCCESS("Connected to Redshift"))
+
+            query = """
+                SELECT 
+                    k.id, 
+                    k.place_name, 
+                    k.category_name, 
+                    k.road_address_name, 
+                    k.phone, 
+                    k.rating, 
+                    k.img_url, 
+                    k.x, 
+                    k.y, 
+                    COALESCE(w.waiting, 0) as waiting_count
+                FROM raw_data.kakao_crawl k
+                LEFT JOIN analytics.realtime_waiting w 
+                    ON CAST(k.id AS VARCHAR) = w.id
+                LIMIT 10 -- 테스트용: 10개만 가져오기 | 운영 시: 이 라인 전체 삭제 (전체 데이터 적재)
+            """
             
-            for row in reader:
-                if Restaurant.objects.filter(name=row['place_name']).exists():
-                    self.stdout.write(self.style.WARNING(f"Skipping {row['place_name']} (Already exists)"))
-                    continue
-                
-                # place_url 생성 (Kakao Map URL 구조)
-                generated_place_url = f"https://place.map.kakao.com/{row['id']}" if row.get('id') else ""
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            
+            count = 0
+            for row in rows:
+                r_id, name, category, address, phone, rating, img_url, x, y, waiting = row
 
-                # 검색을 위한 상세 텍스트 구성
+                if Restaurant.objects.filter(name=name).exists():
+                    self.stdout.write(self.style.WARNING(f"Skipping {name} (Already exists)"))
+                    continue
+
                 desc_text = (
-                    f"맛집 이름: {row['place_name']}, "
-                    f"카테고리: {row['category_name']}, "
-                    f"주소: {row['road_address_name']}. "
-                    f"전화번호: {row['phone'] or '없음'}. "
-                    f"평점은 {row['rating']}점, 방문자 리뷰 {row['review_count']}개, 블로그 리뷰 {row['blog_count']}개입니다."
+                    f"맛집 이름: {name}, 카테고리: {category}, "
+                    f"주소: {address}, 전화번호: {phone or '없음'}. "
+                    f"평점: {rating}점."
                 )
 
                 embedding_vector = None
-                
                 try:
                     response = genai.embed_content(
                         model="models/text-embedding-004",
@@ -53,49 +83,36 @@ class Command(BaseCommand):
                         title="Restaurant Description"
                     )
                     embedding_vector = response['embedding']
-                
                 except Exception as e:
-                    self.stdout.write(self.style.ERROR(f"Error embedding {row['place_name']}: {e}"))
+                    self.stdout.write(self.style.ERROR(f"Error embedding {name}: {e}"))
                     continue
 
                 if embedding_vector is None:
                     continue
-                
-                try:
-                    x_val = float(row['x']) if row['x'] else None
-                    y_val = float(row['y']) if row['y'] else None
-                    rating_val = float(row['rating']) if row['rating'] else 0.0
-                    review_cnt = int(row['review_count']) if row['review_count'] else 0
-                    blog_cnt = int(row['blog_count']) if row['blog_count'] else 0
-                    waiting_cnt = int(row['waiting']) if row['waiting'] else 0
-                except ValueError:
-                    x_val, y_val = None, None
-                    rating_val, review_cnt, blog_cnt, waiting_cnt = 0.0, 0, 0, 0
 
-                # 주소에서 '구' 단위 또는 '동' 단위 추출 (예: 서울 마포구 상수동 -> 마포구 상수동)
-                addr_split = row['address_name'].split()
-                location_str = " ".join(addr_split[1:3]) if len(addr_split) > 2 else row['address_name']
-
-                # DB 저장
                 Restaurant.objects.create(
-                    name=row['place_name'],
-                    address=row['road_address_name'],
-                    category=row['category_name'],
-                    phone=row['phone'],
-                    rating=rating_val,
-                    review_count=review_cnt,
-                    blog_count=blog_cnt,
-                    place_url=generated_place_url,
-                    img_url=row['img_url'],
-                    x=x_val,
-                    y=y_val,
-                    location=location_str,
-                    hourly_visit=row['hourly_visit'],
+                    name=name,
+                    address=address,
+                    category=category,
+                    phone=phone,
+                    rating=float(rating) if rating else 0.0,
+                    place_url=f"https://place.map.kakao.com/{r_id}" if r_id else "",
+                    img_url=img_url,
+                    x=float(x) if x else None,
+                    y=float(y) if y else None,
                     description=desc_text,
                     embedding=embedding_vector,
-                    current_waiting_team=waiting_cnt
+                    current_waiting_team=int(waiting) if waiting else 0
                 )
                 count += 1
-                self.stdout.write(self.style.SUCCESS(f"Saved: {row['place_name']}"))
+                self.stdout.write(self.style.SUCCESS(f"Saved: {name} (Waiting: {waiting})"))
 
-        self.stdout.write(self.style.SUCCESS(f'Successfully loaded {count} restaurants!'))
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f"Error processing data: {e}"))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+        self.stdout.write(self.style.SUCCESS(f'Successfully loaded {count} restaurants from Redshift!'))
