@@ -1,5 +1,4 @@
 from django.db import models
-
 from pgvector.django import VectorField
 
 
@@ -8,7 +7,7 @@ class EmbeddedData(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
     category = models.CharField(max_length=100)
-    phone = models.CharField(max_length=50, blank=True, default='')
+    phone = models.CharField(max_length=50, blank=True, default="")
 
     # 상세 정보
     rating = models.FloatField(default=0.0)
@@ -21,7 +20,7 @@ class EmbeddedData(models.Model):
     x = models.FloatField(null=True, blank=True)
     y = models.FloatField(null=True, blank=True)
     location = models.CharField(max_length=50)
-    hourly_visit = models.TextField(blank=True, default='')
+    hourly_visit = models.TextField(blank=True, default="")
 
     # RAG 핵심
     description = models.TextField()
