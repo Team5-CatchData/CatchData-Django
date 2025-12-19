@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 
 import google.genai as genai
+from google.genai import types
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -43,10 +44,13 @@ def rag_chat_api(request):
         try:
             embedding_response = client.models.embed_content(
                 model="text-embedding-004",
-                content=user_message,
-                task_type="retrieval_query",
+                contents=user_message,
+                config=types.EmbedContentConfig(
+                    task_type="retrieval_query",
+                ),
             )
-            user_embedding = embedding_response["embedding"]
+            user_embedding = embedding_response.embeddings[0].values
+
         except Exception as e:
             return JsonResponse(
                 {"error": f"임베딩 생성 실패: {str(e)}"}, status=500
@@ -129,7 +133,7 @@ def rag_chat_api(request):
 
         try:
             response = client.models.generate_content(
-                model="gemini-pro",
+                model="gemini-2.5-flash",
                 contents=full_prompt,
             )
 

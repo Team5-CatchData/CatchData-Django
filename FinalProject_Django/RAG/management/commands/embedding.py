@@ -1,6 +1,7 @@
 import os
 
 import google.genai as genai
+from google.genai import types
 import psycopg
 from django.core.management.base import BaseCommand
 
@@ -101,11 +102,11 @@ class Command(BaseCommand):
                 try:
                     response = client.models.embed_content(
                         model="text-embedding-004",
-                        content=desc_text,
-                        task_type="retrieval_document",
-                        title="Restaurant Description",
+                        contents=desc_text,
+                        config=types.EmbedContentConfig(output_dimensionality=768),
                     )
-                    embedding_vector = response["embedding"]
+                    # google.genai SDK 응답 객체에서 실제 벡터 값 추출
+                    embedding_vector = response.embeddings[0].values
                 except Exception as e:
                     self.stdout.write(
                         self.style.ERROR(f"Error embedding {name}: {e}")
@@ -125,6 +126,8 @@ class Command(BaseCommand):
                     img_url=img_url,
                     x=float(x) if x else None,
                     y=float(y) if y else None,
+                    # location 필드는 blank/default가 없어서 필수이므로 기본값 설정
+                    location="Unknown",
                     description=desc_text,
                     embedding=embedding_vector,
                     current_waiting_team=waiting_count,
