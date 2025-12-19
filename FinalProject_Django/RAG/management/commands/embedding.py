@@ -21,13 +21,13 @@ class Command(BaseCommand):
         if not gemini_api_key:
             self.stdout.write(self.style.ERROR('GEMINI_API_KEY is missing in .env!'))
             return
-        
+
         if not all([
             redshift_host, redshift_port, redshift_user, redshift_password, redshift_db
-            ]):
+        ]):
             self.stdout.write(
                 self.style.ERROR('Redshift connection info is missing in .env!')
-                )
+            )
             return
 
         genai.configure(api_key=gemini_api_key)
@@ -46,37 +46,40 @@ class Command(BaseCommand):
             cursor = conn.cursor()
             self.stdout.write(self.style.SUCCESS("Connected to Redshift"))
 
+            # SQL 쿼리
             query = """
-                SELECT 
-                    k.id, 
-                    k.place_name, 
-                    k.category_name, 
-                    k.road_address_name, 
-                    k.phone, 
-                    k.rating, 
-                    k.img_url, 
-                    k.x, 
-                    k.y, 
+                SELECT
+                    k.id,
+                    k.place_name,
+                    k.category_name,
+                    k.road_address_name,
+                    k.phone,
+                    k.rating,
+                    k.img_url,
+                    k.x,
+                    k.y,
                     COALESCE(w.waiting, 0) as waiting_count
                 FROM raw_data.kakao_crawl k
-                LEFT JOIN analytics.realtime_waiting w 
+                LEFT JOIN analytics.realtime_waiting w
                     ON CAST(k.id AS VARCHAR) = w.id
-                LIMIT 10 -- 테스트용: 10개만 가져오기 | 운영 시: 이 라인 전체 삭제 (전체 데이터 적재)
+                LIMIT 10
             """
-            
+            # LIMIT 10은 테스트용입니다. 운영 시 제거하세요.
+
             cursor.execute(query)
             rows = cursor.fetchall()
-            
+
             count = 0
             for row in rows:
                 (
-                    r_id, name, category, address, phone, rating, img_url, x, y, waiting
-                 ) = row
+                    r_id, name, category, address, phone,
+                    rating, img_url, x, y, waiting
+                ) = row
 
                 if EmbeddedData.objects.filter(name=name).exists():
                     self.stdout.write(
                         self.style.WARNING(f"Skipping {name} (Already exists)")
-                        )
+                    )
                     continue
 
                 desc_text = (
@@ -97,7 +100,7 @@ class Command(BaseCommand):
                 except Exception as e:
                     self.stdout.write(
                         self.style.ERROR(f"Error embedding {name}: {e}")
-                        )
+                    )
                     continue
 
                 if embedding_vector is None:
@@ -120,7 +123,7 @@ class Command(BaseCommand):
                 count += 1
                 self.stdout.write(
                     self.style.SUCCESS(f"Saved: {name} (Waiting: {waiting})")
-                    )
+                )
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Error processing data: {e}"))
@@ -131,5 +134,7 @@ class Command(BaseCommand):
                 conn.close()
 
         self.stdout.write(
-            self.style.SUCCESS(f'Successfully loaded {count} restaurants from Redshift!')
+            self.style.SUCCESS(
+                f'Successfully loaded {count} restaurants from Redshift!'
             )
+        )

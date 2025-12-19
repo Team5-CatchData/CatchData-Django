@@ -23,4 +23,3 @@ class EmbeddedDataAdmin(admin.ModelAdmin):
 
     # 기본 정렬 순서 (평점 높은 순)
     ordering = ('-rating',)
-    

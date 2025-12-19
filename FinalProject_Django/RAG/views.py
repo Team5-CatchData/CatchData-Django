@@ -3,8 +3,8 @@ import os
 
 import google.generativeai as genai
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from pgvector.django import CosineDistance
 
 from .models import EmbeddedData
@@ -27,14 +27,14 @@ def rag_chat_api(request):
     try:
         data = json.loads(request.body)
         user_message = data.get('message', '')
-        
+
         if not user_message:
             return JsonResponse({'error': '메시지가 비어있습니다.'}, status=400)
 
         # ---------------------------------------------------------
         # 1. Retrieval (검색): 사용자 질문과 관련된 맛집 찾기
         # ---------------------------------------------------------
-        
+
         # 1-1. 사용자 질문을 벡터로 변환
         try:
             embedding_response = genai.embed_content(
@@ -53,7 +53,7 @@ def rag_chat_api(request):
 
         # 1-3. 검색된 맛집 정보를 텍스트로 정리 (Context 생성) 및 대기 시간 계산
         context_list = []
-        recommendations_info = [] # 만약 LLM 파싱 실패 시 사용할 백업 데이터
+        recommendations_info = []  # 만약 LLM 파싱 실패 시 사용할 백업 데이터
 
         for r in similar_restaurants:
             res_id = r.pk
@@ -61,9 +61,11 @@ def rag_chat_api(request):
             # 대기 시간 계산: 1팀당 10분
             waiting_count = r.current_waiting_team
             estimated_minutes = waiting_count * 10
-            
+
             if waiting_count > 0:
-                waiting_str = f"{waiting_count}팀 대기 중 (약 {estimated_minutes}분 소요)"
+                waiting_str = (
+                    f"{waiting_count}팀 대기 중 (약 {estimated_minutes}분 소요)"
+                )
             else:
                 waiting_str = "대기 없음 (바로 입장 가능)"
 
@@ -77,18 +79,21 @@ def rag_chat_api(request):
                 f"  평점: {r.rating}\n"
             )
             context_list.append(info)
-            
+
             recommendations_info.append({
                 'restaurant_ID': res_id,
                 'name': r.name
             })
-        
-        context_text = "\n\n".join(context_list) if context_list else "관련된 맛집 정보가 없습니다."
+
+        if context_list:
+            context_text = "\n\n".join(context_list)
+        else:
+            context_text = "관련된 맛집 정보가 없습니다."
 
         # ---------------------------------------------------------
         # 2. Generation (생성): LLM에게 JSON 응답 요청
         # ---------------------------------------------------------
-        
+
         system_instruction = (
             "당신은 맛집 추천 전문가입니다. 아래 [참고 정보]를 바탕으로 사용자 질문에 답변해주세요.\n"
             "**반드시 아래의 JSON 형식으로만 응답해야 합니다. 다른 말은 덧붙이지 마세요.**\n\n"
@@ -102,13 +107,16 @@ def rag_chat_api(request):
             "- 'answer'에는 [참고 정보]의 '대기 현황'과 '예상 대기 시간'을 포함하여 구체적으로 설명하세요.\n"
             "- [참고 정보]에 없는 내용은 지어내지 마세요.\n"
         )
-        
-        full_prompt = f"{system_instruction}\n\n[참고 정보]\n{context_text}\n\n사용자 질문: {user_message}"
+
+        full_prompt = (
+            f"{system_instruction}\n\n[참고 정보]\n{context_text}\n\n"
+            f"사용자 질문: {user_message}"
+        )
 
         try:
             model = genai.GenerativeModel('gemini-pro')
             response = model.generate_content(full_prompt)
-            
+
             response_text = response.text
             if response_text.startswith("```json"):
                 response_text = response_text[7:]
@@ -116,9 +124,9 @@ def rag_chat_api(request):
                 response_text = response_text[3:]
             if response_text.endswith("```"):
                 response_text = response_text[:-3]
-            
+
             response_text = response_text.strip()
-            
+
             response_data = json.loads(response_text)
             return JsonResponse(response_data)
 
