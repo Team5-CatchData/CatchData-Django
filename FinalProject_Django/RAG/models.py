@@ -1,5 +1,7 @@
 from django.db import models
+
 from pgvector.django import VectorField
+
 
 class EmbeddedData(models.Model):
     # 기본 정보
