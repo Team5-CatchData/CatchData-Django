@@ -4,6 +4,7 @@ from pgvector.django import VectorField
 
 class EmbeddedData(models.Model):
     # 기본 정보
+    place_id = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
     category = models.CharField(max_length=100)
