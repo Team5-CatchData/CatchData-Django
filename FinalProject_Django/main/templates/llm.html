@@ -325,12 +325,27 @@
             const buttonsContainer = document.createElement('div');
             buttonsContainer.className = 'restaurant-buttons';
 
-            restaurantIDs.forEach(restaurantID => {
+            // 각 레스토랑의 이름을 가져와서 버튼 생성
+            restaurantIDs.forEach(async (restaurantID, index) => {
                 const button = document.createElement('button');
                 button.className = 'restaurant-button';
-                button.textContent = `레스토랑 상세보기`;
+                button.textContent = `로딩 중...`;
                 button.onclick = () => handleReservation(restaurantID);
                 buttonsContainer.appendChild(button);
+
+                // 레스토랑 이름 가져오기
+                try {
+                    const response = await fetch(`/api/restaurant/${restaurantID}/name/`);
+                    const data = await response.json();
+                    if (data.name) {
+                        button.textContent = `${data.name} 상세보기`;
+                    } else {
+                        button.textContent = `레스토랑 상세보기`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching restaurant name:', error);
+                    button.textContent = `레스토랑 상세보기`;
+                }
             });
 
             contentDiv.appendChild(buttonsContainer);
