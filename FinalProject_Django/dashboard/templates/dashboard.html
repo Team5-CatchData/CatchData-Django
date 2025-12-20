@@ -248,7 +248,7 @@
         color: #666;
     }
 
-    .top-restaurant-waitting {
+    .top-restaurant-waiting {
         font-size: 1.2rem;
         font-weight: 700;
         color: #ff8c42;
@@ -705,7 +705,7 @@
                     <div style="padding:10px; min-width:200px;">
                         <strong>${restaurant.name}</strong><br>
                         <span style="color:#666;">${restaurant.category}</span><br>
-                        <span style="color:#ff8c42;">대기: ${restaurant.waitting}명</span>
+                        <span style="color:#ff8c42;">대기: ${restaurant.waiting}명</span>
                     </div>
                 `
             });
@@ -749,7 +749,7 @@
                 <h4>${restaurant.name}</h4>
                 <p>${restaurant.region} ${restaurant.city}</p>
                 <span class="category">${restaurant.category}</span>
-                <p class="waiting">대기: ${restaurant.waitting}명</p>
+                <p class="waiting">대기: ${restaurant.waiting}명</p>
             `;
 
             // 리스트 아이템 클릭 시 상세 페이지로 이동
@@ -794,10 +794,10 @@
         container.innerHTML = '';
 
         // 최대 대기 인원 수 계산 (바 차트 비율 계산용)
-        const maxWaitting = Math.max(...restaurants.map(r => r.waitting));
+        const maxWaiting = Math.max(...restaurants.map(r => r.waiting));
 
         restaurants.forEach((restaurant, index) => {
-            const barWidth = (restaurant.waitting / maxWaitting) * 100;
+            const barWidth = (restaurant.waiting / maxWaiting) * 100;
 
             const item = document.createElement('div');
             item.className = 'top-restaurant-item';
@@ -810,7 +810,7 @@
                         <div class="top-restaurant-bar-fill" style="width: ${barWidth}%"></div>
                     </div>
                 </div>
-                <div class="top-restaurant-waitting">${restaurant.waitting}명</div>
+                <div class="top-restaurant-waiting">${restaurant.waiting}명</div>
             `;
 
             // 클릭 시 상세 페이지로 이동
@@ -853,7 +853,7 @@
                 <div class="category-compact-rank">${index + 1}</div>
                 <div class="category-compact-info">
                     <div class="category-compact-name">${category.category}</div>
-                    <div class="category-compact-count">대기: ${category.total_waitting}명</div>
+                    <div class="category-compact-count">대기: ${category.total_waiting}명</div>
                 </div>
             `;
 
@@ -901,25 +901,25 @@
         }
 
         // 최대 대기 인원 수 계산
-        const maxWaitting = Math.max(...categories.map(c => c.total_waitting));
-        const minWaitting = Math.min(...categories.map(c => c.total_waitting));
+        const maxWaiting = Math.max(...categories.map(c => c.total_waiting));
+        const minWaiting = Math.min(...categories.map(c => c.total_waiting));
 
         // 각 카테고리를 워드클라우드 형식으로 표시
         categories.forEach(category => {
             // 대기 인원 수에 따라 크기 레벨 계산 (1-5)
             let sizeLevel;
-            const range = maxWaitting - minWaitting;
+            const range = maxWaiting - minWaiting;
             if (range === 0) {
                 sizeLevel = 3;
             } else {
-                const normalized = (category.total_waitting - minWaitting) / range;
+                const normalized = (category.total_waiting - minWaiting) / range;
                 sizeLevel = Math.ceil(normalized * 5) || 1;
             }
 
             const word = document.createElement('span');
             word.className = `wordcloud-word word-size-${sizeLevel}`;
             word.textContent = category.category;
-            word.title = `대기: ${category.total_waitting}명`;
+            word.title = `대기: ${category.total_waiting}명`;
 
             // 클릭 시 해당 카테고리로 필터링
             word.addEventListener('click', function() {

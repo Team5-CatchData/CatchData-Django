@@ -12,7 +12,7 @@ class MapSearchHistory(models.Model):
     city = models.CharField(max_length=15)
     x = models.FloatField()
     y = models.FloatField()
-    waitting = models.IntegerField()
+    waiting = models.IntegerField()
 
     def __str__(self):
             return f"{self.name} ({self.region})"
