@@ -24,13 +24,13 @@ def get_top_restaurants(request):
 
         # Restaurant 모델에서 대기 인원이 있는 레스토랑
         restaurant_top = Restaurant.objects.filter(
-            waitting__isnull=False
-        ).order_by('-waitting')[:5]
+            waiting__isnull=False
+        ).order_by('-waiting')[:5]
 
         # MapSearchHistory 모델에서 대기 인원이 있는 레스토랑
         map_top = MapSearchHistory.objects.filter(
-            waitting__isnull=False
-        ).order_by('-waitting')[:5]
+            waiting__isnull=False
+        ).order_by('-waiting')[:5]
 
         # 두 모델의 데이터를 합쳐서 정렬
         all_restaurants = []
@@ -38,7 +38,7 @@ def get_top_restaurants(request):
         for r in restaurant_top:
             all_restaurants.append({
                 'name': r.name,
-                'waitting': r.waitting,
+                'waiting': r.waiting,
                 'category': r.category,
                 'restaurant_ID': r.restaurant_ID
             })
@@ -46,13 +46,13 @@ def get_top_restaurants(request):
         for m in map_top:
             all_restaurants.append({
                 'name': m.name,
-                'waitting': m.waitting,
+                'waiting': m.waiting,
                 'category': m.category,
                 'restaurant_ID': m.restaurant_ID
             })
 
         # 대기 인원 수로 정렬하고 상위 5개만 선택
-        all_restaurants.sort(key=lambda x: x['waitting'], reverse=True)
+        all_restaurants.sort(key=lambda x: x['waiting'], reverse=True)
         top_5 = all_restaurants[:5]
 
         return JsonResponse({
@@ -69,36 +69,36 @@ def get_top_categories(request):
         from django.db.models import Sum
         from collections import defaultdict
 
-        category_waitting = defaultdict(int)
+        category_waiting = defaultdict(int)
 
         # Restaurant 모델에서 카테고리별 대기 인원 합산
         restaurant_categories = Restaurant.objects.filter(
-            waitting__isnull=False,
+            waiting__isnull=False,
             category__isnull=False
         ).exclude(category='').values('category').annotate(
-            total_waitting=Sum('waitting')
+            total_waiting=Sum('waiting')
         )
 
         for item in restaurant_categories:
-            category_waitting[item['category']] += item['total_waitting']
+            category_waiting[item['category']] += item['total_waiting']
 
         # MapSearchHistory 모델에서 카테고리별 대기 인원 합산
         map_categories = MapSearchHistory.objects.filter(
-            waitting__isnull=False,
+            waiting__isnull=False,
             category__isnull=False
         ).exclude(category='').values('category').annotate(
-            total_waitting=Sum('waitting')
+            total_waiting=Sum('waiting')
         )
 
         for item in map_categories:
-            category_waitting[item['category']] += item['total_waitting']
+            category_waiting[item['category']] += item['total_waiting']
 
         # 딕셔너리를 리스트로 변환하고 정렬
         category_list = [
-            {'category': category, 'total_waitting': total}
-            for category, total in category_waitting.items()
+            {'category': category, 'total_waiting': total}
+            for category, total in category_waiting.items()
         ]
-        category_list.sort(key=lambda x: x['total_waitting'], reverse=True)
+        category_list.sort(key=lambda x: x['total_waiting'], reverse=True)
 
         # Top 5만 선택
         top_5_categories = category_list[:5]
@@ -194,12 +194,12 @@ def filter_restaurants(request):
                     'city': r.city,
                     'x': r.x,
                     'y': r.y,
-                    'waitting': r.waitting if r.waitting is not None else 0
+                    'waiting': r.waiting if r.waiting is not None else 0
                 })
 
         # MapSearchHistory 모델 결과 변환
         map_results = list(map_queryset.values(
-            'restaurant_ID', 'name', 'category', 'region', 'city', 'x', 'y', 'waitting'
+            'restaurant_ID', 'name', 'category', 'region', 'city', 'x', 'y', 'waiting'
         ))
 
         # 두 결과 합치기
