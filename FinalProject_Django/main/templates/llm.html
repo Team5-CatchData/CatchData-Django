@@ -274,7 +274,7 @@
         const loadingId = addLoadingMessage();
 
         try {
-            const response = await fetch("{% url 'main:chat_api' %}", {
+            const response = await fetch("{% url 'main:rag_api' %}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -322,18 +322,11 @@
             const buttonsContainer = document.createElement('div');
             buttonsContainer.className = 'restaurant-buttons';
 
-            // 테스트용 레스토랑 이름 매핑
-            const restaurantNames = {
-                2154588: '빨간어묵',
-                213213: '버거걱'
-            };
-
             restaurantIDs.forEach(restaurantID => {
                 const button = document.createElement('button');
                 button.className = 'restaurant-button';
-                const restaurantName = restaurantNames[restaurantID] || `레스토랑 ${restaurantID}`;
-                button.textContent = `${restaurantName} 예약하기`;
-                button.onclick = () => handleReservation(restaurantID, restaurantName);
+                button.textContent = `레스토랑 상세보기`;
+                button.onclick = () => handleReservation(restaurantID);
                 buttonsContainer.appendChild(button);
             });
 
@@ -345,7 +338,7 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function handleReservation(restaurantID, restaurantName) {
+    function handleReservation(restaurantID) {
         // 레스토랑 상세 페이지로 이동
         window.location.href = `/restaurant/${restaurantID}/`;
     }
