@@ -22,7 +22,7 @@ class Restaurant(models.Model):
     class Meta:
         verbose_name = "레스토랑"
         verbose_name_plural = "레스토랑"
-        ordering = ['-created_at']
+        #ordering = ['-created_at']
 
     def __str__(self):
         return f"{self.name} ({self.restaurant_ID})"
