@@ -287,10 +287,6 @@
 
             removeLoadingMessage(loadingId);
 
-            // 디버그: JSON 응답 출력
-            console.log('RAG API Response:', data);
-            addDebugMessage(data);
-
             // 에러 응답 처리
             if (data.error) {
                 addMessage('assistant', `오류: ${data.error}`);
@@ -398,30 +394,6 @@
         if (loadingMsg) {
             loadingMsg.remove();
         }
-    }
-
-    function addDebugMessage(data) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message assistant';
-        messageDiv.style.opacity = '0.7';
-        messageDiv.style.fontSize = '0.85rem';
-
-        const label = document.createElement('div');
-        label.className = 'message-label';
-        label.textContent = '🔍 디버그';
-
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'message-content';
-        contentDiv.style.backgroundColor = '#f0f0f0';
-        contentDiv.style.color = '#333';
-        contentDiv.style.fontFamily = 'monospace';
-        contentDiv.style.whiteSpace = 'pre-wrap';
-        contentDiv.textContent = JSON.stringify(data, null, 2);
-
-        messageDiv.appendChild(label);
-        messageDiv.appendChild(contentDiv);
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 </script>
 {% endblock %}
