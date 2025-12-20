@@ -774,7 +774,7 @@
     // Top 5 레스토랑 로드
     async function loadTopRestaurants() {
         try {
-            const response = await fetch("{% url 'dashboard:top_restaurants' %}");
+            const response = await fetch("{% url 'dashboard:get_top_restaurants' %}");
             const data = await response.json();
 
             if (data.top_restaurants && data.top_restaurants.length > 0) {
@@ -827,7 +827,7 @@
     // Top 5 카테고리 로드
     async function loadTopCategories() {
         try {
-            const response = await fetch("{% url 'dashboard:top_categories' %}");
+            const response = await fetch("{% url 'dashboard:get_top_categories' %}");
             const data = await response.json();
 
             if (data.top_categories && data.top_categories.length > 0) {
@@ -876,7 +876,7 @@
     // 워드클라우드 로드
     async function loadWordCloud() {
         try {
-            const response = await fetch("{% url 'dashboard:top_categories' %}");
+            const response = await fetch("{% url 'dashboard:get_top_categories' %}");
             const data = await response.json();
 
             if (data.top_categories && data.top_categories.length > 0) {
