@@ -569,7 +569,7 @@
     // 필터 옵션 로드
     async function loadFilterOptions() {
         try {
-            const response = await fetch("{% url 'dashboard:filter_options' %}");
+            const response = await fetch("{% url 'dashboard:get_filter_options' %}");
             const data = await response.json();
 
             // 지역-도시 매핑 저장
