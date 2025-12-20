@@ -62,7 +62,7 @@ class Command(BaseCommand):
                 FROM raw_data.kakao_crawl k
                 LEFT JOIN analytics.realtime_waiting w 
                     ON CAST(k.id AS VARCHAR) = w.id
-                LIMIT 10
+                LIMIT 15
             """
 
             cursor.execute(query)
