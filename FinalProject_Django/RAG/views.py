@@ -74,7 +74,7 @@ def rag_chat_api(request):
             wait_min = r.estimated_waiting_time
 
             info = (
-                f"- ID: {r.pk}\n"
+                f"- ID: {r.place_id}\n"
                 f"  이름: {r.name}\n"
                 f"  카테고리: {r.category}\n"
                 f"  위치: {r.address}\n"
@@ -83,7 +83,7 @@ def rag_chat_api(request):
                 f"  특징: {r.description}\n"
             )
             context_list.append(info)
-            recommendations_info.append({"restaurant_ID": r.pk, "name": r.name})
+            recommendations_info.append({"restaurant_ID": r.place_id, "name": r.name})
 
         context_text = "\n".join(context_list)
 

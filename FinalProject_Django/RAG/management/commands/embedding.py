@@ -117,6 +117,7 @@ class Command(BaseCommand):
                     continue
 
                 EmbeddedData.objects.create(
+                    place_id=r_id,
                     name=name,
                     address=address,
                     category=category,
