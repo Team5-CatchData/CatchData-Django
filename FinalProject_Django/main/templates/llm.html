@@ -287,10 +287,13 @@
 
             removeLoadingMessage(loadingId);
 
-            if (data.answer) {
+            // 에러 응답 처리
+            if (data.error) {
+                addMessage('assistant', `오류: ${data.error}`);
+            } else if (data.answer) {
                 addMessage('assistant', data.answer, data.restaurant_ID);
             } else {
-                addMessage('assistant', '\uC8C4\uC1A1\uD569\uB2C8\uB2E4. \uC751\uB2F5\uC744 \uC0DD\uC131\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.');
+                addMessage('assistant', '죄송합니다. 응답을 생성할 수 없습니다.');
             }
         } catch (error) {
             console.error('Error:', error);
