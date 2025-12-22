@@ -156,6 +156,44 @@
         font-size: 3rem;
         color: #ccc;
     }
+
+    .similar-restaurant-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .similar-restaurant-card:hover {
+        background-color: #fff5f0;
+        transform: translateX(4px);
+    }
+
+    .similar-restaurant-info {
+        flex: 1;
+    }
+
+    .similar-restaurant-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .similar-restaurant-category {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .similar-restaurant-arrow {
+        font-size: 1.5rem;
+        color: #ff8c42;
+    }
 </style>
 {% endblock %}
 
@@ -212,10 +250,22 @@
         </div>
     </div>
 </div>
+
+<div class="restaurant-detail-container" id="similarRestaurantsSection" style="margin-top: 2rem; display: none;">
+    <div class="restaurant-info">
+        <h2 style="font-size: 1.5rem; font-weight: 600; color: #333; margin-bottom: 1.5rem;">🍽️ 비슷한 식당 추천</h2>
+        <div id="similarRestaurantsList"></div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
+    // 페이지 로드 시 비슷한 식당 로드
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSimilarRestaurants();
+    });
+
     function makeReservation() {
         // 예약 확인
         const confirmed = confirm('{{ restaurant.name }}을(를) 예약하시겠습니까?');
@@ -228,6 +278,43 @@
             // 예약 후 챗봇 페이지로 이동 (선택사항)
             // window.location.href = "{% url 'main:llm' %}";
         }
+    }
+
+    async function loadSimilarRestaurants() {
+        try {
+            const response = await fetch("{% url 'main:get_similar_restaurants' restaurant.restaurant_ID %}");
+            const data = await response.json();
+
+            if (data.similar_restaurants && data.similar_restaurants.length > 0) {
+                displaySimilarRestaurants(data.similar_restaurants);
+                document.getElementById('similarRestaurantsSection').style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error loading similar restaurants:', error);
+        }
+    }
+
+    function displaySimilarRestaurants(restaurants) {
+        const container = document.getElementById('similarRestaurantsList');
+        container.innerHTML = '';
+
+        restaurants.forEach(restaurant => {
+            const card = document.createElement('div');
+            card.className = 'similar-restaurant-card';
+            card.innerHTML = `
+                <div class="similar-restaurant-info">
+                    <div class="similar-restaurant-name">${restaurant.name}</div>
+                    <div class="similar-restaurant-category">${restaurant.category}</div>
+                </div>
+                <div class="similar-restaurant-arrow">→</div>
+            `;
+
+            card.addEventListener('click', function() {
+                window.location.href = `/restaurant/${restaurant.restaurant_ID}/`;
+            });
+
+            container.appendChild(card);
+        });
     }
 </script>
 {% endblock %}
