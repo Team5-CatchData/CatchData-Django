@@ -286,6 +286,12 @@
         margin-left: auto;
     }
 
+    .recommendation-stars {
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
+        letter-spacing: 2px;
+    }
+
     .top-restaurant-bar {
         width: 100%;
         height: 8px;
@@ -566,7 +572,7 @@
 
     <div class="recommendation-section">
         <div class="recommendation-header">
-            <h2 class="recommendation-title">⭐ 추천도 기반 TOP 5</h2>
+            <h2 class="recommendation-title">⭐ 오늘 추천하는 음식점 TOP 5</h2>
             <select id="recTypeSelect" class="rec-type-select">
                 <option value="quality">품질성</option>
                 <option value="balanced">종합성</option>
@@ -917,7 +923,10 @@
         const maxRecValue = Math.max(...restaurants.map(r => r.rec_value));
 
         restaurants.forEach((restaurant, index) => {
-            const barWidth = (restaurant.rec_value / maxRecValue) * 100;
+            // 추천도를 5단계로 변환 (별점)
+            const normalizedValue = (restaurant.rec_value / maxRecValue) * 5;
+            const starCount = Math.round(normalizedValue);
+            const stars = '⭐'.repeat(starCount);
 
             const item = document.createElement('div');
             item.className = 'top-restaurant-item';
@@ -926,11 +935,8 @@
                 <div class="top-restaurant-info">
                     <div class="top-restaurant-name">${restaurant.name}</div>
                     <div class="top-restaurant-category">${restaurant.category}</div>
-                    <div class="top-restaurant-bar">
-                        <div class="top-restaurant-bar-fill" style="width: ${barWidth}%"></div>
-                    </div>
+                    <div class="recommendation-stars">${stars}</div>
                 </div>
-                <div class="top-restaurant-waiting">${restaurant.rec_value.toFixed(2)}</div>
             `;
 
             item.addEventListener('click', function() {
