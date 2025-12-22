@@ -193,7 +193,7 @@
         color: #ff8c42;
     }
 
-    .top-restaurants-section {
+    .top-restaurants-section, .recommendation-section {
         background-color: #ffffff;
         border-radius: 12px;
         padding: 2rem;
@@ -201,11 +201,42 @@
         margin-bottom: 2rem;
     }
 
-    .top-restaurants-title {
+    .top-restaurants-title, .recommendation-title {
         font-size: 1.3rem;
         font-weight: 600;
         color: #333;
         margin-bottom: 1.5rem;
+    }
+
+    .recommendation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .recommendation-title {
+        margin-bottom: 0;
+    }
+
+    .rec-type-select {
+        padding: 0.5rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        background-color: #ffffff;
+        color: #333;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+    }
+
+    .rec-type-select:hover {
+        border-color: #ff8c42;
+    }
+
+    .rec-type-select:focus {
+        outline: none;
+        border-color: #ff8c42;
     }
 
     .top-restaurant-item {
@@ -532,6 +563,20 @@
             <div class="loading">데이터를 불러오는 중...</div>
         </div>
     </div>
+
+    <div class="recommendation-section">
+        <div class="recommendation-header">
+            <h2 class="recommendation-title">⭐ 추천도 기반 TOP 5</h2>
+            <select id="recTypeSelect" class="rec-type-select">
+                <option value="quality">품질성</option>
+                <option value="balanced">종합성</option>
+                <option value="convenience">편의성</option>
+            </select>
+        </div>
+        <div id="recommendationList">
+            <div class="loading">데이터를 불러오는 중...</div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -549,10 +594,16 @@
         loadTopRestaurants();
         loadTopCategories();
         loadWordCloud();
+        loadTopByRecommendation('quality');
 
         // 지역 선택 이벤트 리스너
         document.getElementById('regionSelect').addEventListener('change', function() {
             updateCityOptions(this.value);
+        });
+
+        // 추천도 타입 선택 이벤트 리스너
+        document.getElementById('recTypeSelect').addEventListener('change', function() {
+            loadTopByRecommendation(this.value);
         });
     });
 
@@ -839,6 +890,57 @@
             console.error('Error loading top categories:', error);
             document.getElementById('topCategoriesCompact').innerHTML = '<div class="empty-list"><p>데이터를 불러오는 데 실패했습니다.</p></div>';
         }
+    }
+
+    // 추천도 기반 Top 5 로드
+    async function loadTopByRecommendation(recType) {
+        try {
+            const response = await fetch(`{% url 'dashboard:get_top_by_recommendation' %}?type=${recType}`);
+            const data = await response.json();
+
+            if (data.top_restaurants && data.top_restaurants.length > 0) {
+                displayRecommendationList(data.top_restaurants);
+            } else {
+                document.getElementById('recommendationList').innerHTML = '<div class="empty-list"><p>추천 데이터가 없습니다.</p></div>';
+            }
+        } catch (error) {
+            console.error('Error loading recommendation list:', error);
+            document.getElementById('recommendationList').innerHTML = '<div class="empty-list"><p>데이터를 불러오는 데 실패했습니다.</p></div>';
+        }
+    }
+
+    // 추천도 기반 Top 5 표시
+    function displayRecommendationList(restaurants) {
+        const container = document.getElementById('recommendationList');
+        container.innerHTML = '';
+
+        const maxRecValue = Math.max(...restaurants.map(r => r.rec_value));
+
+        restaurants.forEach((restaurant, index) => {
+            const barWidth = (restaurant.rec_value / maxRecValue) * 100;
+
+            const item = document.createElement('div');
+            item.className = 'top-restaurant-item';
+            item.innerHTML = `
+                <div class="top-restaurant-rank">${index + 1}</div>
+                <div class="top-restaurant-info">
+                    <div class="top-restaurant-name">${restaurant.name}</div>
+                    <div class="top-restaurant-category">${restaurant.category}</div>
+                    <div class="top-restaurant-bar">
+                        <div class="top-restaurant-bar-fill" style="width: ${barWidth}%"></div>
+                    </div>
+                </div>
+                <div class="top-restaurant-waiting">${restaurant.rec_value.toFixed(2)}</div>
+            `;
+
+            item.addEventListener('click', function() {
+                if (restaurant.restaurant_ID) {
+                    window.location.href = `/restaurant/${restaurant.restaurant_ID}/`;
+                }
+            });
+
+            container.appendChild(item);
+        });
     }
 
     // Top 5 카테고리 표시 (Compact 버전)
