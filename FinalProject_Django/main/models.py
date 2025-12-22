@@ -18,6 +18,7 @@ class Restaurant(models.Model):
     rec_quality = models.FloatField(null=True, blank=True, verbose_name="추천 품질 점수")
     rec_balanced = models.FloatField(null=True, blank=True, verbose_name="추천 균형 점수")
     rec_convenience = models.FloatField(null=True, blank=True, verbose_name="추천 편의 점수")
+    cluster = models.IntegerField(null=True, blank=True, verbose_name="클러스터")
 
     class Meta:
         verbose_name = "레스토랑"
