@@ -111,6 +111,45 @@ def get_top_categories(request):
 
 
 @require_http_methods(["GET"])
+def get_top_by_recommendation(request):
+    """추천도 기반 Top 5 레스토랑 조회 API"""
+    try:
+        rec_type = request.GET.get('type', 'quality')
+
+        # 추천도 타입에 따라 정렬 필드 결정
+        field_mapping = {
+            'quality': 'rec_quality',
+            'balanced': 'rec_balanced',
+            'convenience': 'rec_convenience'
+        }
+
+        order_field = field_mapping.get(rec_type, 'rec_quality')
+
+        # Restaurant 모델에서 추천도 기준으로 상위 5개 조회
+        top_restaurants = Restaurant.objects.filter(
+            **{f'{order_field}__isnull': False}
+        ).order_by(f'-{order_field}')[:5]
+
+        results = []
+        for r in top_restaurants:
+            rec_value = getattr(r, order_field, 0)
+            results.append({
+                'restaurant_ID': r.restaurant_ID,
+                'name': r.name,
+                'category': r.category,
+                'rating': float(r.rating) if r.rating else 0,
+                'rec_value': float(rec_value) if rec_value else 0
+            })
+
+        return JsonResponse({
+            'top_restaurants': results,
+            'rec_type': rec_type
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["GET"])
 def get_filter_options(request):
     """필터 옵션 조회 API"""
     try:
