@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from pgvector.django import CosineDistance
 
+from main.models import ChatHistory
 from .models import EmbeddedData
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -150,13 +151,32 @@ def rag_chat_api(request):
 
             response_data = json.loads(response_text)
 
+            # 채팅 기록 저장
+            try:
+                ChatHistory.objects.create(
+                    query=user_message,
+                    answer=response_data.get('answer', '')
+                )
+            except Exception as save_error:
+                # 저장 실패해도 응답은 반환
+                print(f"채팅 기록 저장 실패: {save_error}")
+
             return JsonResponse(response_data)
 
         except json.JSONDecodeError:
             backup_ids = [r["restaurant_ID"] for r in recommendations_info[:3]]
-            return JsonResponse(
-                {"restaurant_ID": backup_ids, "answer": response.text}
-            )
+            backup_response = {"restaurant_ID": backup_ids, "answer": response.text}
+
+            # 채팅 기록 저장
+            try:
+                ChatHistory.objects.create(
+                    query=user_message,
+                    answer=backup_response.get('answer', '')
+                )
+            except Exception as save_error:
+                print(f"채팅 기록 저장 실패: {save_error}")
+
+            return JsonResponse(backup_response)
         except Exception as e:
             return JsonResponse(
                 {"error": f"LLM 생성 오류: {str(e)}"}, status=500

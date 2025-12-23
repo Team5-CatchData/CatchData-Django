@@ -93,7 +93,7 @@
         </a>
         <nav>
             <a href="{% url 'dashboard:dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}>Dashboard</a>
-            <a href="{% url 'main:llm' %}" {% if request.resolver_match.url_name == 'llm' %}class="active"{% endif %}>LLM</a>
+            <a href="{% url 'main:llm' %}" {% if request.resolver_match.url_name == 'llm' %}class="active"{% endif %}>Chatbot</a>
         </nav>
     </header>
 
