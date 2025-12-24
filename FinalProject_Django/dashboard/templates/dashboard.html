@@ -1070,8 +1070,8 @@
 
     async function loadChatWordCloud() {
         try {
-            // const response = await fetch("{% url 'dashboard:get_wordcloud_data' %}");
-            const response = await fetch("{% url 'dashboard:get_local_wordcloud_data' %}");
+            const response = await fetch("{% url 'dashboard:get_wordcloud_data' %}");
+            //const response = await fetch("{% url 'dashboard:get_local_wordcloud_data' %}");  //로컬 테스트용 csv 워드클라우드
             const data = await response.json();
 
             if (data.words && data.words.length > 0) {
