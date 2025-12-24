@@ -1,4 +1,20 @@
 from django.db import models
+from django.utils import timezone
+
+
+class ChatHistory(models.Model):
+    """LLM 채팅 기록 모델"""
+    query = models.TextField(verbose_name="사용자 질문")
+    answer = models.TextField(verbose_name="LLM 응답")
+    created_at = models.DateTimeField(default=timezone.now, verbose_name="생성 시간")
+
+    class Meta:
+        verbose_name = "채팅 기록"
+        verbose_name_plural = "채팅 기록"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.created_at.strftime('%Y-%m-%d %H:%M:%S')} - {self.query[:50]}"
 
 
 class Restaurant(models.Model):
@@ -18,6 +34,7 @@ class Restaurant(models.Model):
     rec_quality = models.FloatField(null=True, blank=True, verbose_name="추천 품질 점수")
     rec_balanced = models.FloatField(null=True, blank=True, verbose_name="추천 균형 점수")
     rec_convenience = models.FloatField(null=True, blank=True, verbose_name="추천 편의 점수")
+    cluster = models.IntegerField(null=True, blank=True, verbose_name="클러스터")
 
     class Meta:
         verbose_name = "레스토랑"
