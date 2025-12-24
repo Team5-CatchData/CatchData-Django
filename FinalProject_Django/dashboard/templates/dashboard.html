@@ -406,6 +406,7 @@
         gap: 2rem;
     }
 
+    /* 기존 워드클라우드 스타일 */
     .wordcloud-container {
         display: flex;
         flex-wrap: wrap;
@@ -416,6 +417,17 @@
         min-height: 300px;
         background: linear-gradient(135deg, #fff5f0 0%, #ffffff 100%);
         border-radius: 12px;
+    }
+
+    /* [추가] 채팅 워드클라우드 스타일 (AnyChart 방식) */
+    .chat-wordcloud-container {
+        width: 100%;
+        height: 400px; /* 높이 지정 필수 */
+        background: #ffffff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
     }
 
     .top-categories-compact {
@@ -546,16 +558,26 @@
     </div>
 
     <div class="category-analytics-section">
-        <h2 class="category-analytics-title">📊 카테고리 분석</h2>
+        <h2 class="category-analytics-title">📊 카테고리 & 키워드 분석</h2>
         <div class="category-analytics-grid">
             <div>
-                <h3 style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">🔥 Hot 점심 키워드</h3>
-                <div class="wordcloud-container" id="wordcloudContainer">
-                    <div class="loading">데이터를 불러오는 중...</div>
+                <div style="margin-bottom: 3rem;">
+                    <h3 style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">🔥 Hot 점심 키워드 (대기 많은 카테고리)</h3>
+                    <div class="wordcloud-container" id="wordcloudContainer">
+                        <div class="loading">데이터를 불러오는 중...</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">🗣️ 사용자 질문 키워드 (실시간 채팅 분석)</h3>
+                    <div class="chat-wordcloud-container" id="chatWordcloudContainer">
+                        <div class="loading" style="padding-top: 150px;">데이터를 불러오는 중...</div>
+                    </div>
                 </div>
             </div>
+
             <div>
-                <h3 style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">🔥 인기 TOP 5</h3>
+                <h3 style="font-size: 1.1rem; color: #666; margin-bottom: 1rem;">🔥 인기 카테고리 TOP 5</h3>
                 <div class="top-categories-compact" id="topCategoriesCompact">
                     <div class="loading">데이터를 불러오는 중...</div>
                 </div>
@@ -588,18 +610,22 @@
 
 {% block extra_scripts %}
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_map_api_key }}"></script>
+<script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+<script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
+
 <script>
     let map;
     let markers = [];
     let regionCitiesMap = {}; // 지역-도시 매핑 저장
 
-    // 페이지 로드 시 지도 초기화
+    // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', function() {
         initMap();
         loadFilterOptions();
         loadTopRestaurants();
         loadTopCategories();
-        loadWordCloud();
+        loadWordCloud();        // 기존 워드클라우드 로드
+        loadChatWordCloud();    // [추가] 새로운 채팅 워드클라우드 로드
         loadTopByRecommendation('quality');
 
         // 지역 선택 이벤트 리스너
@@ -981,7 +1007,6 @@
         });
     }
 
-    // 워드클라우드 로드
     async function loadWordCloud() {
         try {
             const response = await fetch("{% url 'dashboard:get_top_categories' %}");
@@ -998,7 +1023,6 @@
         }
     }
 
-    // 워드클라우드 표시
     function displayWordCloud(categories) {
         const container = document.getElementById('wordcloudContainer');
         container.innerHTML = '';
@@ -1008,13 +1032,10 @@
             return;
         }
 
-        // 최대 대기 인원 수 계산
         const maxWaiting = Math.max(...categories.map(c => c.total_waiting));
         const minWaiting = Math.min(...categories.map(c => c.total_waiting));
 
-        // 각 카테고리를 워드클라우드 형식으로 표시
         categories.forEach(category => {
-            // 대기 인원 수에 따라 크기 레벨 계산 (1-5)
             let sizeLevel;
             const range = maxWaiting - minWaiting;
             if (range === 0) {
@@ -1029,30 +1050,52 @@
             word.textContent = category.category;
             word.title = `대기: ${category.total_waiting}명`;
 
-            // 클릭 시 해당 카테고리로 필터링
             word.addEventListener('click', function() {
                 const categorySelect = document.getElementById('categorySelect');
                 categorySelect.value = category.category;
-
-                // 검색 폼 제출
                 document.getElementById('filterForm').dispatchEvent(new Event('submit'));
-
-                // 페이지 스크롤을 지도 섹션으로 이동
                 document.querySelector('.map-section').scrollIntoView({ behavior: 'smooth' });
             });
 
             container.appendChild(word);
         });
 
-        // 워드 위치 랜덤화 (자연스러운 워드클라우드 느낌)
         const words = container.querySelectorAll('.wordcloud-word');
         const wordsArray = Array.from(words);
-
-        // Fisher-Yates shuffle 알고리즘으로 섞기
         for (let i = wordsArray.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             container.insertBefore(wordsArray[j], wordsArray[i]);
         }
+    }
+
+    async function loadChatWordCloud() {
+        try {
+            const response = await fetch("{% url 'dashboard:get_wordcloud_data' %}");
+            //const response = await fetch("{% url 'dashboard:get_local_wordcloud_data' %}");  //로컬 테스트용 csv 워드클라우드
+            const data = await response.json();
+
+            if (data.words && data.words.length > 0) {
+                displayChatWordCloud(data.words);
+            } else {
+                document.getElementById('chatWordcloudContainer').innerHTML = '<div class="empty-list" style="padding-top:150px;"><p>분석할 채팅 기록이 부족합니다.</p></div>';
+            }
+        } catch (error) {
+            console.error('Error loading chat wordcloud:', error);
+            document.getElementById('chatWordcloudContainer').innerHTML = '<div class="empty-list" style="padding-top:150px;"><p>데이터 로드 실패</p></div>';
+        }
+    }
+
+    function displayChatWordCloud(words) {
+        const containerId = 'chatWordcloudContainer';
+        document.getElementById(containerId).innerHTML = ''; // 로딩 제거
+
+        var chart = anychart.tagCloud(words);
+        chart.angles([0, 90]); // 텍스트 회전 각도
+        chart.colorRange(false);
+        chart.tooltip().format("빈도: {%value}회");
+
+        chart.container(containerId);
+        chart.draw();
     }
 </script>
 {% endblock %}
