@@ -186,6 +186,10 @@ python manage.py migrate RAG --database=vectordb
 python manage.py embedding
 ```
 
+### 6-1. docker 내의 DB 테이블에 문제 있을 경우 실행
+```bash
+sudo docker compose exec db psql -U pgv_user -d pgv_db -c "CREATE EXTENSION IF NOT EXISTS vector;"
+
 ### 7. 개발 서버 실행
 ```bash
 python manage.py runserver
@@ -195,7 +199,7 @@ python manage.py runserver
 - 메인 페이지: 
 - 대시보드: 
 
-## 📁 프로젝트 구조
+## 프로젝트 구조
 
 ```
 FinalProject_Django/
