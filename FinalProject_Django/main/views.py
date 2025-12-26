@@ -40,7 +40,8 @@ def get_similar_restaurants(request, restaurant_id):
         if current_restaurant.cluster is None:
             return JsonResponse({'similar_restaurants': []})
 
-        # 같은 클러스터에 속하면서 현재 레스토랑이 아닌 식당들을 rec_balanced 기준으로 정렬
+        # 같은 클러스터에 속하면서 현재 레스토랑이 아닌 식당들을
+        # rec_balanced 기준으로 정렬
         similar_restaurants = Restaurant.objects.filter(
             cluster=current_restaurant.cluster,
             rec_balanced__isnull=False
@@ -55,7 +56,11 @@ def get_similar_restaurants(request, restaurant_id):
                 'name': restaurant.name,
                 'category': restaurant.category,
                 'rating': float(restaurant.rating) if restaurant.rating else 0,
-                'rec_balanced': float(restaurant.rec_balanced) if restaurant.rec_balanced else 0
+                'rec_balanced': (
+                    float(restaurant.rec_balanced)
+                    if restaurant.rec_balanced
+                    else 0
+                )
             })
 
         return JsonResponse({'similar_restaurants': results})

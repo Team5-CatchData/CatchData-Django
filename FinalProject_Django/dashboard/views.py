@@ -25,7 +25,6 @@ def get_top_restaurants(request):
     """대기 인원 수 기반 Top 5 레스토랑 조회 API"""
     try:
         # Restaurant와 MapSearchHistory 모두에서 조회
-        from django.db.models import Q
 
         # Restaurant 모델에서 대기 인원이 있는 레스토랑
         restaurant_top = Restaurant.objects.filter(
@@ -71,8 +70,9 @@ def get_top_restaurants(request):
 def get_top_categories(request):
     """카테고리별 대기 인원 합산 Top 5 조회 API"""
     try:
-        from django.db.models import Sum
         from collections import defaultdict
+
+        from django.db.models import Sum
 
         category_waiting = defaultdict(int)
 
@@ -159,8 +159,12 @@ def get_filter_options(request):
     """필터 옵션 조회 API"""
     try:
         # Restaurant 모델과 MapSearchHistory 모델 모두에서 조회
-        restaurant_regions = Restaurant.objects.values_list('region', flat=True).distinct()
-        map_regions = MapSearchHistory.objects.values_list('region', flat=True).distinct()
+        restaurant_regions = Restaurant.objects.values_list(
+            'region', flat=True
+        ).distinct()
+        map_regions = MapSearchHistory.objects.values_list(
+            'region', flat=True
+        ).distinct()
         all_regions = sorted(set(list(restaurant_regions) + list(map_regions)))
         all_regions = [r for r in all_regions if r]
 
@@ -182,10 +186,17 @@ def get_filter_options(request):
                 region_cities[m['region']].add(m['city'])
 
         # set을 sorted list로 변환
-        region_cities = {region: sorted(list(cities)) for region, cities in region_cities.items()}
+        region_cities = {
+            region: sorted(list(cities))
+            for region, cities in region_cities.items()
+        }
 
-        restaurant_categories = Restaurant.objects.values_list('category', flat=True).distinct()
-        map_categories = MapSearchHistory.objects.values_list('category', flat=True).distinct()
+        restaurant_categories = Restaurant.objects.values_list(
+            'category', flat=True
+        ).distinct()
+        map_categories = MapSearchHistory.objects.values_list(
+            'category', flat=True
+        ).distinct()
         all_categories = sorted(set(list(restaurant_categories) + list(map_categories)))
         all_categories = [cat for cat in all_categories if cat]
 

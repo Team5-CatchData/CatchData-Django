@@ -1,10 +1,9 @@
 import os
 
 import google.genai as genai
-from google.genai import types
 import psycopg
 from django.core.management.base import BaseCommand
-
+from google.genai import types
 from RAG.models import EmbeddedData
 
 
@@ -60,7 +59,7 @@ class Command(BaseCommand):
                        k.phone, k.rating, k.img_url, k.x, k.y,
                        COALESCE(w.waiting, 0) as waiting_count
                 FROM raw_data.kakao_crawl k
-                LEFT JOIN analytics.realtime_waiting w 
+                LEFT JOIN analytics.realtime_waiting w
                     ON CAST(k.id AS VARCHAR) = w.id
             """
 
@@ -92,7 +91,8 @@ class Command(BaseCommand):
 
                 desc_text = (
                     f"맛집 이름: {name}, 카테고리: {category}. "
-                    f"현재 대기 팀: {waiting_count}팀, 예상 대기시간: {estimated_time}분. "
+                    f"현재 대기 팀: {waiting_count}팀, "
+                    f"예상 대기시간: {estimated_time}분. "
                     f"주소: {address}, 전화번호: {phone or '없음'}. "
                     f"평점: {rating}점."
                 )

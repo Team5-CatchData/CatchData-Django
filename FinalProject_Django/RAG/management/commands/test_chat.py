@@ -1,7 +1,9 @@
 import json
+
 from django.core.management.base import BaseCommand
 from django.test import RequestFactory
 from RAG.views import rag_chat_api  # 뷰 함수 직접 import
+
 
 class Command(BaseCommand):
     help = "Test rag_chat_api view directly by simulating a request"
@@ -12,7 +14,9 @@ class Command(BaseCommand):
         TEST_QUESTION = "20분 후에 먹을 거 추천해줘"
         # ---------------------------------------------------------
 
-        self.stdout.write(self.style.SUCCESS(f"\n[Test Start] Question: {TEST_QUESTION}"))
+        self.stdout.write(
+            self.style.SUCCESS(f"\n[Test Start] Question: {TEST_QUESTION}")
+        )
         self.stdout.write("-" * 50)
 
         # 1. 가짜(Mock) 요청 객체 생성
@@ -28,22 +32,26 @@ class Command(BaseCommand):
         # views.py를 수정하지 않고, import해온 함수에 request를 넣어 실행합니다.
         try:
             response = rag_chat_api(request)
-            
+
             # 3. 결과 파싱 및 출력
             if response.status_code == 200:
                 # JsonResponse 본문(body)을 읽어서 파이썬 딕셔너리로 변환
                 response_data = json.loads(response.content.decode('utf-8'))
-                
+
                 answer = response_data.get('answer', 'No answer')
                 restaurant_ids = response_data.get('restaurant_ID', [])
 
                 self.stdout.write(self.style.SUCCESS("Status: 200 OK"))
                 self.stdout.write(self.style.SUCCESS("\n[AI Answer]"))
                 self.stdout.write(answer)
-                
+
                 self.stdout.write(f"\n[Recommended Restaurant IDs]: {restaurant_ids}")
             else:
-                self.stdout.write(self.style.ERROR(f"Failed with status code: {response.status_code}"))
+                self.stdout.write(
+                    self.style.ERROR(
+                        f"Failed with status code: {response.status_code}"
+                    )
+                )
                 self.stdout.write(f"Error Content: {response.content.decode('utf-8')}")
 
         except Exception as e:
