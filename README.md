@@ -77,6 +77,11 @@ AI: 대기 10분, 평점 4.8의 고품질 식당 vs 대기 0분, 평점 4.0 식�
 
 ## 시스템 아키텍처
 
+### 프로젝트 아키텍쳐
+<img width="2000" height="1600" alt="데이터flowdiagram drawio의 사본 drawio (1)" src="https://github.com/user-attachments/assets/e3e966bc-2d9a-40cf-aeda-d69a5d371c95" />
+
+
+### 웹 서버
 ```
 ┌─────────────┐
 │   User      │
