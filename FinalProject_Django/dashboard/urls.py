@@ -16,4 +16,6 @@ urlpatterns = [
     path(
         'api/filter-restaurants/', views.filter_restaurants, name='filter_restaurants'
     ),
+    path('api/wordcloud/', views.get_wordcloud_data, name='get_wordcloud_data'),
+    path('api/wordcloud/local/', views.get_local_wordcloud_data, name='get_local_wordcloud_data'),
 ]
