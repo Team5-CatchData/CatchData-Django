@@ -1,10 +1,12 @@
-import os
 import csv
+import os
+
 import google.genai as genai
-from google.genai import types
-from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.core.management.base import BaseCommand
+from google.genai import types
 from RAG.models import EmbeddedData
+
 
 class Command(BaseCommand):
     help = "Load restaurant data from CSV files and save to EmbeddedData for testing"
@@ -27,7 +29,7 @@ class Command(BaseCommand):
         if not os.path.exists(kakao_path):
             self.stdout.write(self.style.ERROR(f"CSV file not found: {kakao_path}"))
             return
-        
+
         if not os.path.exists(waiting_path):
             self.stdout.write(self.style.ERROR(f"CSV file not found: {waiting_path}"))
             return
@@ -42,12 +44,16 @@ class Command(BaseCommand):
                     cnt = row.get('waiting', 0)
                     if rid:
                         try:
-                            # [수정] '2.0' 같은 문자열 처리를 위해 float로 변환 후 int로 변환
+                            # float로 변환 후 int로 변환
                             waiting_map[str(rid)] = int(float(cnt))
                         except ValueError:
                             waiting_map[str(rid)] = 0
-                            
-            self.stdout.write(self.style.SUCCESS(f"Loaded waiting data: {len(waiting_map)} items"))
+
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Loaded waiting data: {len(waiting_map)} items"
+                )
+            )
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Failed to read waiting file: {e}"))
             return
@@ -55,11 +61,11 @@ class Command(BaseCommand):
         # 5. 맛집 데이터 로드 및 임베딩
         count = 0
         skipped_no_waiting = 0
-        
+
         try:
             with open(kakao_path, 'r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
-                
+
                 for row in reader:
                     r_id = row.get('id')
                     name = row.get('place_name')
@@ -70,7 +76,7 @@ class Command(BaseCommand):
                     img_url = row.get('img_url', '')
                     x = row.get('x')
                     y = row.get('y')
-                    
+
                     if not r_id or not name:
                         continue
 
@@ -88,7 +94,8 @@ class Command(BaseCommand):
 
                     desc_text = (
                         f"맛집 이름: {name}, 카테고리: {category}. "
-                        f"현재 대기 팀: {waiting_count}팀, 예상 대기시간: {estimated_time}분. "
+                        f"현재 대기 팀: {waiting_count}팀, "
+                        f"예상 대기시간: {estimated_time}분. "
                         f"주소: {address}, 전화번호: {phone or '없음'}. "
                         f"평점: {rating}점."
                     )
@@ -103,7 +110,9 @@ class Command(BaseCommand):
                         )
                         embedding_vector = response.embeddings[0].values
                     except Exception as e:
-                        self.stdout.write(self.style.ERROR(f"Error embedding {name}: {e}"))
+                        self.stdout.write(
+                            self.style.ERROR(f"Error embedding {name}: {e}")
+                        )
                         continue
 
                     if embedding_vector is None:
@@ -128,10 +137,22 @@ class Command(BaseCommand):
                     )
                     count += 1
                     if count % 10 == 0:
-                        self.stdout.write(self.style.SUCCESS(f"Processed {count} restaurants..."))
+                        self.stdout.write(
+                            self.style.SUCCESS(
+                                f"Processed {count} restaurants..."
+                            )
+                        )
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Error processing CSV: {e}"))
 
-        self.stdout.write(self.style.WARNING(f"Skipped {skipped_no_waiting} restaurants (No waiting data)"))
-        self.stdout.write(self.style.SUCCESS(f"Successfully loaded {count} restaurants for testing!"))
+        self.stdout.write(
+            self.style.WARNING(
+                f"Skipped {skipped_no_waiting} restaurants (No waiting data)"
+            )
+        )
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Successfully loaded {count} restaurants for testing!"
+            )
+        )

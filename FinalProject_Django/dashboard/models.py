@@ -2,7 +2,6 @@
 from django.db import models
 
 
-
 class MapSearchHistory(models.Model):
     """지도 검색 기록 모델"""
     restaurant_ID = models.IntegerField() # 주로 조회하는 값이니 char보다는 int로 수정
