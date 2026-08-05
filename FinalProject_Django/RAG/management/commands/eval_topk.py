@@ -2,6 +2,7 @@ import csv
 import json
 import os
 import statistics
+import time
 from datetime import datetime
 
 import google.genai as genai
@@ -68,6 +69,10 @@ class Command(BaseCommand):
             "--output", type=str, default=None,
             help="결과 CSV 저장 경로. 생략 시 BASE_DIR에 타임스탬프 파일명으로 저장",
         )
+        parser.add_argument(
+            "--sleep-ms", type=int, default=4000,
+            help="호출 사이 지연(ms). 무료 티어 RPM 한도 방지용 (기본 4000ms)",
+        )
 
     def handle(self, *args, **options):
         gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -109,7 +114,7 @@ class Command(BaseCommand):
                         f"q={q['message'][:24]}..."
                     )
                     try:
-                        result = run_rag_pipeline(client, q["message"], top_k=k)
+                        result = self._call_with_retry(client, q["message"], k)
                     except RagPipelineError as e:
                         rows.append({
                             "query": q["message"],
@@ -118,6 +123,8 @@ class Command(BaseCommand):
                             "repeat": rep,
                             "error": str(e),
                         })
+                        if options["sleep_ms"]:
+                            time.sleep(options["sleep_ms"] / 1000)
                         continue
 
                     recall_hit = any(
@@ -151,9 +158,28 @@ class Command(BaseCommand):
                         "total_token_count": usage.get("total_token_count"),
                     })
 
+                    if options["sleep_ms"]:
+                        time.sleep(options["sleep_ms"] / 1000)
+
         self._write_csv(output_path, rows)
         self._print_summary(rows, k_values)
         self.stdout.write(self.style.SUCCESS(f"Saved raw results to {output_path}"))
+
+    def _call_with_retry(self, client, message, top_k, max_retries=2):
+        """레이트리밋(429)일 때만 한 번 더 대기 후 재시도. 그 외 오류는 즉시 올린다."""
+        for attempt in range(max_retries + 1):
+            try:
+                return run_rag_pipeline(client, message, top_k=top_k)
+            except RagPipelineError as e:
+                is_quota_error = "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)
+                if not is_quota_error or attempt == max_retries:
+                    raise
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"  Rate limited, retrying in 60s (attempt {attempt + 1})..."
+                    )
+                )
+                time.sleep(60)
 
     def _check_category_match(self, restaurant_ids, category_keyword):
         if not restaurant_ids:

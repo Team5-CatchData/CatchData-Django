@@ -167,7 +167,7 @@ def run_rag_pipeline(client, user_message: str, top_k: int = 30) -> dict:
     t1 = time.perf_counter()
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-flash-lite-latest",
             contents=full_prompt,
         )
     except Exception as e:
