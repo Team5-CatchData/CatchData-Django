@@ -100,7 +100,7 @@ class Command(BaseCommand):
                 embedding_vector = None
                 try:
                     response = client.models.embed_content(
-                        model="text-embedding-004",
+                        model="gemini-embedding-001",
                         contents=desc_text,
                         config=types.EmbedContentConfig(output_dimensionality=768),
                     )

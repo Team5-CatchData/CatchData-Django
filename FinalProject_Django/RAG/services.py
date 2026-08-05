@@ -99,9 +99,11 @@ def run_rag_pipeline(client, user_message: str, top_k: int = 30) -> dict:
     t0 = time.perf_counter()
     try:
         embedding_response = client.models.embed_content(
-            model="text-embedding-004",
+            model="gemini-embedding-001",
             contents=user_message,
-            config=types.EmbedContentConfig(task_type="retrieval_query"),
+            config=types.EmbedContentConfig(
+                task_type="retrieval_query", output_dimensionality=768
+            ),
         )
         user_embedding = embedding_response.embeddings[0].values
     except Exception as e:

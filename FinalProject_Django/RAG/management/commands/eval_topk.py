@@ -11,17 +11,21 @@ from django.core.management.base import BaseCommand
 from RAG.models import EmbeddedData
 from RAG.services import RagPipelineError, run_rag_pipeline
 
-# 카테고리별로 다양한 질의 세트. category_keyword는 정답(gold) 후보를
-# 임베딩 검색과 무관하게 SQL로 뽑아내기 위한 필터 키워드로 쓰인다.
+# static_feature.csv 실데이터 기준(홍대/대치동, 11개 sub_category)에 맞춘 질의 세트.
+# category_keyword는 정답(gold) 후보를 임베딩 검색과 무관하게 SQL로 뽑아내기 위한
+# 필터 키워드로, EmbeddedData.category(=sub_category)와 정확히 일치해야 한다.
 DEFAULT_QUERIES = [
-    {"message": "강남역 근처 국밥집 지금 바로 갈만한 곳 추천해줘", "category_keyword": "국밥"},
-    {"message": "이태원에서 파스타 먹고 싶은데 웨이팅 적은 곳 알려줘", "category_keyword": "파스타"},
-    {"message": "홍대 삼겹살 맛집 6시쯤 갈건데 추천해줘", "category_keyword": "삼겹살"},
-    {"message": "성수동 카페 지금 바로 앉을 수 있는 곳", "category_keyword": "카페"},
-    {"message": "강남 초밥 맛집 평점 좋은 곳으로 추천해줘", "category_keyword": "초밥"},
-    {"message": "잠실 냉면 맛집 대기 짧은 곳", "category_keyword": "냉면"},
-    {"message": "여의도 회식하기 좋은 고기집 추천", "category_keyword": "고기"},
-    {"message": "합정 브런치 카페 지금 갈만한 곳", "category_keyword": "브런치"},
+    {"message": "홍대에서 한식 먹고 싶은데 지금 바로 갈만한 곳 추천해줘", "category_keyword": "한식"},
+    {"message": "대치동 일식집 중에 웨이팅 적은 곳 알려줘", "category_keyword": "일식"},
+    {"message": "홍대 중식당 저녁에 갈만한 곳 추천해줘", "category_keyword": "중식"},
+    {"message": "대치동 양식 레스토랑 분위기 좋은 곳", "category_keyword": "양식"},
+    {"message": "홍대 치킨집 술 한잔 하기 좋은 곳으로 추천해줘", "category_keyword": "치킨"},
+    {"message": "대치동 분식집 간단하게 먹을 곳", "category_keyword": "분식"},
+    {"message": "홍대 간식거리 먹을만한 곳 추천해줘", "category_keyword": "간식"},
+    {"message": "대치동 술집 안주 맛있는 곳", "category_keyword": "술집"},
+    {"message": "홍대 고기집 회식하기 좋은 곳 추천", "category_keyword": "고기집"},
+    {"message": "대치동 뷔페 가족모임하기 좋은 곳", "category_keyword": "뷔페"},
+    {"message": "홍대 샤브샤브 맛집 지금 갈만한 곳", "category_keyword": "샤브샤브"},
 ]
 
 
